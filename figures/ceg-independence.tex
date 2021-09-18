@@ -1,0 +1,21 @@
+\scalebox{0.9}{
+\begin{tikzpicture} [node distance = 2cm, on grid]
+\node (v0) [state] {$w_0$};
+\node (v1) [state, right = of v0, fill = col4] {$w_1$};
+\node (v2) [state, right = of v1, fill = col5] {$w_2$};
+\node (v3) [state, right = of v2, fill = col6] {$w_3$};
+\node (v4) [state, right = of v3, fill = col7] {$w_4$};
+\node (w) [right = of v4] {$w_{\infty}$};
+\path [-stealth]
+    (v0) edge [bend left] node [above] {$F$} (v1)
+    (v0) edge [bend right] node [below] {$M$} (v1)
+    (v1) edge [bend left] node [above] {yes} (v2)
+    (v1) edge [bend right] node [below] {no} (v2)
+    (v2) edge [bend left] node [above] {yes} (v3)
+    (v2) edge [bend right] node [below] {no} (v3)
+    (v3) edge [bend left] node [above] {yes} (v4)
+    (v3) edge [bend right] node [below] {no} (v4)
+    (v4) edge [bend left] node [above] {yes} (w)
+    (v4) edge [bend right] node [below] {no} (w);
+\end{tikzpicture}
+}

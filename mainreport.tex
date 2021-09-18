@@ -1,0 +1,365 @@
+\documentclass[runningheads]{llncs}
+%
+\usepackage{amsmath}
+\usepackage{amssymb}
+% \usepackage{booktabs} % For pretty tables
+% \usepackage{caption} % For caption spacing
+% \usepackage{subcaption} % For sub-figures
+\usepackage[dvipsnames]{xcolor}
+\usepackage{graphicx}
+\usepackage{makecell}
+\usepackage{array} % For centering text in tables with fixed width
+\newcolumntype{x}[1]{>{\centering\arraybackslash\hspace{0pt}}p{#1}}
+\usepackage{pgfplots}
+\usepackage[all]{nowidow}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usetikzlibrary{er,positioning,bayesnet}
+\usetikzlibrary{automata, arrows.meta, positioning}
+\usepackage{multicol}
+\usepackage{algpseudocode,algorithm,algorithmicx}
+\usepackage{minted}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    citecolor=red,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue
+}
+\usepackage[inline]{enumitem} % Horizontal lists
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\definecolor{col1}{rgb}{0.5529411764705883, 0.8274509803921568, 0.7803921568627451}
+\definecolor{col2}{rgb}{1.0, 1.0, 0.7019607843137254}
+\definecolor{col3}{rgb}{0.7450980392156863, 0.7294117647058823, 0.8549019607843137}
+\definecolor{col4}{rgb}{0.984313725490196, 0.5019607843137255, 0.4470588235294118}
+\definecolor{col5}{rgb}{0.5019607843137255, 0.6941176470588235, 0.8274509803921568}
+\definecolor{col6}{rgb}{0.9921568627450981, 0.7058823529411765, 0.3843137254901961}
+\definecolor{col7}{rgb}{0.7019607843137254, 0.8705882352941177, 0.4117647058823529}
+\definecolor{col8}{rgb}{0.9882352941176471, 0.803921568627451, 0.8980392156862745}
+\definecolor{col9}{rgb}{0.8509803921568627, 0.8509803921568627, 0.8509803921568627}
+\definecolor{col10}{rgb}{0.7372549019607844, 0.5019607843137255, 0.7411764705882353}
+\definecolor{col11}{rgb}{0.8, 0.9215686274509803, 0.7725490196078432}
+\definecolor{col12}{rgb}{1.0, 0.9294117647058824, 0.43529411764705883}
+\definecolor{lightgrey}{rgb}{0.83, 0.83, 0.83}
+\pgfplotsset{compat=1.14}
+
+\newcommand{\ind}{\perp\!\!\!\!\perp}
+\newcommand{\notind}{\not\!\perp\!\!\!\perp}
+
+\newcommand{\card}[1]{\left\vert{#1}\right\vert}
+\newcommand*\Let[2]{\State #1 $\gets$ #2}
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.15}
+\renewcommand{\floatpagefraction}{0.8}
+\renewcommand{\textfraction}{0.1}
+\setlength{\floatsep}{3pt plus 1pt minus 1pt}
+\setlength{\textfloatsep}{3pt plus 1pt minus 1pt}
+\setlength{\intextsep}{3pt plus 1pt minus 1pt}
+\setlength{\abovecaptionskip}{2pt plus 1pt minus 1pt}
+
+\begin{document}
+%
+\title{Chain Event Graphs - subtitle}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Katarzyna Kobalczyk\inst{1}}
+%
+%\authorrunning{F. Author et al.}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Department of Statistics, University of Warwick, United Kingdom
+\email{katarzyna.kobalczyk@warwick.ac.uk}}
+
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed massa sem, fringilla auctor rhoncus vitae, mollis eget elit. Donec auctor enim eu tempor luctus. Nulla ultrices sagittis ex malesuada rhoncus. Nulla fringilla velit a ligula mattis, at placerat justo ornare. Etiam faucibus tellus sed turpis efficitur consequat. Vestibulum non massa eu lorem aliquam efficitur. Cras volutpat convallis nisi ut blandit. Curabitur sit amet erat rutrum, efficitur lectus sagittis, tempor ipsum. Vestibulum elementum, urna ut bibendum commodo, odio libero ultrices risus, vel ornare tortor eros nec eros. Ut varius elementum risus. Aenean mi erat, feugiat eu blandit eget, interdum eu eros. Nam laoreet dui ex, non dignissim elit rutrum vitae. Donec feugiat lacus ac erat hendrerit consequat. Aenean ut tellus purus.
+
+\keywords{Chain Event Graphs, Missing Data, Missing Not at Random, Continuous Variables in Discrete Graphical Models}
+\end{abstract}
+%
+%
+%
+\section{Introduction}
+TBD
+
+\section{Cohort II: A Study of Learner and New Drivers}\label{sec:cohortii}
+`Cohort II' was a major six-year study funded by the British Department for Transport. It provides a picture of how `cohorts’ of learner drivers in Great Britain undertake driver training and testing, and of their subsequent experiences as new drivers. It followed the first large-scale investigation of new drivers, the Cohort I study in 1988–89. The aims of the study were:
+\begin{itemize}[topsep=0pt]
+    \item to investigate how people learn to drive, including the number of hours of tuition and practice, and to compare this to outcomes from the theory and practical driving tests;
+    \item to assess the impact of changes to the testing regime, specifically the hazard perception test which was introduced during the period of study;
+    \item to explore new drivers’ experiences and attitudes to driving; and
+    \item to identify their level of accident involvement over time.
+\end{itemize}
+Every three months, from November 2001 to August 2005, a cohort of 8,000 practical driving test candidates was sent postal questionnaires. Each person who passed the practical test and responded to the original survey on learning to drive (LTDQ) was subsequently followed through further postal questionnaires at 6, 12, 24 and 36 months after completing the original survey (DEQ1-4). Cohorts A to H received all four questionnaires. Subsequent cohorts received just the first three or the first two questionnaires because of the overall project duration.
+The sample initially comprised 42,851 learner drivers, however not all of these passed their practical tests to be involved in the subsequent surveys of new drivers. The sample of new drivers in Cohort II varied from over 10,000 at six months after the practical test to just fewer than 3,000 at three years after taking the test. Tables \ref{tab:respondents-cohort} and \ref{tab:respondents-sex} show the number of samples and respondents to each survey by cohort and sex. 
+\vspace{2ex}
+\begin{table}[ht]
+\centering
+\begin{tabular}{ccccccc}
+  \hline
+Cohort & LTDQ & \makecell{DEQ sample \\ (LTDQ pass \\respondents)} & DEQ1 & DEQ2 & DEQ3 & DEQ4 \\ 
+  \hline
+A & 3001 & 1247 & 696 & 506 & 342 & 323 \\ 
+  B & 3118 & 1445 & 787 & 576 & 447 & 399 \\ 
+  C & 3082 & 1423 & 723 & 568 & 399 & 389 \\ 
+  D & 3086 & 1491 & 781 & 586 & 439 & 370 \\ 
+  E & 2804 & 1230 & 636 & 444 & 324 & 293 \\ 
+  F & 2956 & 1173 & 630 & 441 & 303 & 277 \\ 
+  G & 2792 & 1316 & 582 & 453 & 291 & 295 \\ 
+  H & 2883 & 1385 & 712 & 553 & 397 & 412 \\ 
+  I & 2439 & 1221 & 642 & 469 & 339 &  \\ 
+  J & 2776 & 1289 & 654 & 474 & 333 &  \\ 
+  K & 2408 & 1180 & 552 & 428 & 281 &  \\ 
+  L & 2448 & 1192 & 579 & 434 & 291 &  \\ 
+  M & 2179 & 1038 & 506 & 328 &  &  \\ 
+  N & 2246 & 1082 & 549 & 373 &  &  \\ 
+  O & 2320 & 1124 & 501 & 405 &  &  \\ 
+  P & 2316 & 1096 & 520 & 400 &  &  \\ 
+   \hline
+   \hline
+   & 42854 & 19932 & 10050 & 7438 & 4186 & 2758 
+\end{tabular}
+\vspace{1ex}
+\caption{Samples and number of respondents to LTDQ, DEQ1, DEQ2, DEQ3 and DEQ4 by cohort.}
+\label{tab:respondents-cohort}
+\end{table}
+\begin{table}[ht]
+\centering
+\begin{tabular}{x{0.1\textwidth}|x{0.1\textwidth}x{0.1\textwidth}|x{0.1\textwidth}x{0.1\textwidth}}
+\multicolumn{1}{c|}{} & \multicolumn{2}{c|}{Women} & \multicolumn{2}{c}{Men}\\
+\cline{2-5}
+\multicolumn{1}{c|}{Questionnaire} & $n$ & \% & $n$ & \% \\
+\hline
+  LTDQ & 26776.0 & 62.5 & 16078.0 & 37.5 \\ 
+  DEQ1 & 6410.0 & 63.8 & 3640.0 & 36.0 \\ 
+  DEQ2 & 4825.0 & 64.9 & 2613.0 & 34.8 \\ 
+  DEQ3 & 2792.0 & 66.7 & 1394.0 & 32.8 \\ 
+  DEQ4 & 1878.0 & 68.1 & 880.0 & 31.1 \\ 
+\hline
+\end{tabular}
+\vspace{1ex}
+\caption{Number of respondents and response rates to LTDQ, DEQ1, DEQ2, DEQ3 and DEQ4 by sex.}
+\label{tab:respondents-sex}
+\end{table}
+The proportion of female and male respondents to the surveys was imbalanced with 26776 (62.5 \%) female and 16078 (37.5\%) male respondents to the initial Learning to Drive Questionnaire (LTDQ). The proportion of men among the respondents was steadily decreasing in each subsequent wave of the Driving Experience Questionnaire. In section \ref{sec:dropouts} we present how CEGs can become useful in expressing possible hypothesis about the missingness of the responses.
+
+One of the objective of the `Cohort II' study was to determine the influence of a range of variables on young drivers’ accident liability. The original report from the study concludes with a multivariate regression model describing the relationship between key driver's characteristics and the number of reported accidents. It introduces a `base model' on four variables: sex, age, experience and exposure. Later additional variables are added to the `base model' and by the means of statistical significance testing the factors which influence accident liability are identified. In this modelling context age is taken as the age at which the respondent passed the practical driving test. The experience measure is the number of years the respondent has been driving. Exposure is a composite measure which includes the annualised mileage driven within the reporting period plus 10 times the annualised number of days on which the driver has driven. This measure has been derived artificially to optimise the fit of the models. 
+In section \ref{subsec:treemodels} we present how Chain Event Graphs, in particular Ordered Chain Event Graphs, can be used as an alternative to classical Generalised Linear Modelling, using the Cohort II study as an example. We argue that CEGs can represent dependencies between multiple variables in a far easier to interpret way than what can usually be achieved through a careful examination of the interaction coefficients of a GLM model. Additionally, standard GLM approaches require the data to contain only complete observations. In section \ref{subsec:missing} we discuss how CEGs can provide a framework for including observations with missing values, identifying if the data are missing at random and extracting further conclusions from the patterns of missingness.
+Due to the decreasing number of respondents in every iteration of the survey, in Section \ref{sec:cegs} we only consider the first wave of the Driver Experience Questionnaire - up to 6 months after passing the driving test (DEQ1). For modelling changes in probability distributions over time dynamic extensions of Chain Event Graphs have recently been developed \cite{barclay2015dynamic,collazo2017thesis}, although their application is beyond the scope of this report.
+
+\section{Introduction to Graphical Models}\label{subsec:graphicalintro}
+A graphical model is a probabilistic model for which a graph expresses the conditional dependence structure between random variables. Probabilistic graphical models use a graph-based representation as the foundation for encoding a distribution over a multi-dimensional space and set of independence assumptions which hold within a given distribution. These representations sit at the intersection of statistics and computer science, relying on concepts from probability theory and graph algorithms. The graphical structure of these models make them a particularly useful tool for dealing with complex dependencies between many variables and it has therefore been employed in many real-world applications, including recent advancements in machine learning for medical diagnosis or speech recognition.
+
+\subsection{Bayesian Networks}\label{subsec:bayesiannetworks}
+Perhaps the most widely known probabilistic graphical model is a Bayesian network. The class of discrete Bayesian networks has a very close relationship to Chain Event Graphs: it is in fact a small subclass of these models. Because many of the developments enabling inference of BNs motivated the development of CEGs, we briefly introduce them before discussing CEGs. 
+
+The core of the Bayesian network representation is a directed acyclic graph (DAG) $\mathcal{G}$, whose nodes are the random variables in our domain and whose edges correspond, intuitively, to direct influence of one node on another. Several equivalent definitions of a Bayesian network have been offered.
+
+\begin{definition}[Beyesian netwrok]
+Let $\boldsymbol{X} = \{X_1, X_2, \ldots, X_m\}$ be a vector of random variables. Suppose its joint probability density function factorises as $\prod_ {i=1}^{n} p(x_i | \boldsymbol{x}_{Q_i})$, where $Q_i \subseteq \{X_1,\ldots,X_{i-1}\}$ (with the exception of $Q_1 = \emptyset$). A Bayesian network (BN) on $\boldsymbol{X}$ is a set of the $m - 1$ conditional independence statements together with a DAG (Directed Acyclic Graph) $\mathcal{G} = (V, E)$ such that:
+\begin{enumerate}[topsep=0pt]
+    \item The set of vertices $V$ of the DAG is given by $\{X_1, X_2, \ldots, X_m\}$
+    \item A directed edge from $X_i$ into $X_j$ is in the edge set $E$ of $\mathcal{G}$ if and only if $X_i$ is a component of the vector $\boldsymbol{X}_{Q_j}$ where $Q_j$ is the parent set of $X_j$ for all $1 \leq i, j \leq m$.
+\end{enumerate}
+\end{definition}
+
+We make the above definition concrete with an example from the `Cohort~II' study. Hence, let $X_a$ describe the age of the individual passing the driving test, $X_s$ their sex, $X_f$ their frequency of driving during the first 6 months after passing the driving test. We also let $Y$ be a binary variable describing whether an individual reported at least one non-low speed accident during the first 6 months after passing the test. For simplicity we define $X_a$ to take values in three categories of age: 16-18, 19-21, 21-80. $X_f$ can take one of the three values with the following encoding: 1 = Everyday,  2 = 4-6 days per week, 3 = Between once a week to to once a fortnight. Due to small number of observations, in all models from this Section we exclude drivers who reported a frequency of driving below once a fortnight. Fig~\ref{bayesnets} presents three possible BNs estimated from the `Cohort~II' data set using the \texttt{bnlearn} R package.
+\begin{figure}[ht]
+\centering
+\input{figures/bayesnets}
+\caption{Three plausible Bayesian Networks for the `Cohort II' data set.}
+\label{bayesnets}
+\end{figure}
+The graphical represntaion allows us to directlyread off the conditional independence assumptions from the DAGs in Fig~\ref{bayesnets}. For example, in a) we have that $Y \ind X_f, X_s \ | \ X_a$ and that the factorisation of the joint probability mass function of $(X_a, X_s, X_f, Y)$ is given by:
+\[p(x_a, x_s, x_f, y) = p(x_a)p(x_s|x_a)p(x_f|x_a)p(y|x_a)\]
+In b) we have that $X_s \ind X_f \ | \ X_a, Y$ and the mass function with ordering $(X_a, X_f, Y, X_s)$ factorises as:
+\[p(x_a, x_s, x_f, y) = p(x_a)p(x_f|x_a)p(y|x_a, x_f)p(x_s|x_a, y)\]
+Observe that the ordering $(X_a, X_f, Y, X_s)$ in a) would give the same graph and the same factorisation of $p(x_a, x_s, x_f, y)$. We cannot necessarily read a unique ordering from a DAG of a BN but all such orderings must correspond to the same factorisation.
+Finally in c) we have that $Y \ind X_s \ | \ X_a$ and but contrary to the DAG in a) $Y \notind X_f\ | \ X_a$. A possible ordering of the variables in c) is $(X_a, X_s, X_f, Y)$ with the joint probability mass function factorising as:
+\[p(x_a, x_s, x_f, y) = p(x_a)p(x_s|x_a)p(x_f|x_a)p(y|x_a, x_f)\]
+
+It is now clear how Bayesian network representation can clearly encodes some conditional independence statements of the model. More conditional independence statements can be inferred from the graph using a d-separation property, the formal definition of which can be found in \cite{}
+However, in certain cases the BN does not provide a rich enough structure to incorporate all information obtainable from the data set. This is the case, for example, when the conditional independence statements of the problem are asymmetric. In our example, we might want to encdoe the following assumption that $Y \ind X_s\ | \ X_f = \text{Everyday}$ but $Y \notind X_s\ | \ X_f = \text{4-6 days per week}$. Asymmetric assumption of this kind cannot be represented simply by the directed edges between variables in the BN. This motivates introduction of a new class of graphical models. 
+
+\section{Chain Event Graphs}\label{sec:cegs}
+\emph{Chain Event Graphs} are a family of graphical statistical models derived from well-known probability trees. Their interpretation is quite different from that of a BNs introduced in the previous section: in particular, in the event-tree framework, vertices always correspond to events in an underlying probability space and not to random variables. Every edge $e = (v, v')$ depicts the possibility of transitioning from the donating vertex $v$ to the receiving vertex $v'$ and can be labelled by a corresponding transition probability $\theta(e)$. This is in contrast to the Bayesian Network where edges represent certain dependencies between the donating and receiving variables. \\
+By introducing the concepts of \emph{stages} and \emph{positions} which group the vertices of a tree according to their associated conditional probabilities, an event tree becomes a \emph{staged tree}. The tree structure is then tightened by transforming it into a new, more compact object called a \emph{Chain Event Graph (CEG)}. In this section we define these concepts and support them with illustrative examples based on the 'Cohort II' Study from Section~\ref{sec:cohortii}. We adopt the notation as introduced in \cite{smith2017cegs}. 
+
+\subsection{Tree based models on the example of `Cohort II' study}\label{subsec:treemodels}
+
+A finite graph denoted as a pair $\mathcal{T} = (V,E)$ with vertex set $V$ and edge set $E \subseteq V \times V$ is called a \emph{tree}, if it is connected and has no cycles. We call the set of vertices $\text{pa}(v) = \{v' \ | \ \text{there is } (v',v) \in E\}$ the \emph{parents} of $v \in V$ and $\text{ch}(v)=\{v' \in V \ | \ \text{there is } (v,v') \in E\}$ the set of \emph{children} of $v \in V$. A vertex without parents is called a \emph{root} of the tree, usually denoted $v_0 \in V$, and vertices without children are called \emph{leaves}. Non-leaves, or inner vertices, are also called \emph{situations}. We call a pair $\mathcal{F}(v) = (v,E(v))$ of a vertex $v \in V$ together with its emanating edges $E(v) = \{(v,v') \in E \ | \ v' \in \text{ch}(v)\}$ a \emph{floret}.
+\begin{definition}[Probability tree]
+Let $\mathcal{T} = (V, E)$ be an event tree with parameters $\theta(e) = \theta(v, v')$ associated to all edges $e = (v, v') \in E$. We call the vector $\boldsymbol{\theta}_v = (\theta(e)| e \in E(v))$ of all parameters associated to the same floret a vector of floret parameters. If all labels are strictly positive probabilities and the components of all floret parameter vectors sum to unity, so  $\theta(e) \in (0,1)$ and $\sum_{e \in E(v)}\theta(e) = 1$ for all $e \in E$ and all non-leaves $v \in V$, then the pair
+$(\mathcal{T}, \boldsymbol{\theta}_{\mathcal{T}})$ of graph $\mathcal{T}$ and vector of all labels $\boldsymbol{\theta}_{\mathcal{T}} = (\theta(e)| e \in E))$ is called a probability tree.
+\end{definition}
+Tree-based models are especially useful where there exist a natural ordering of the variables of interest. In our example we want to gain knowledge about the influence of $X_a, X_s, X_f$ on the target variable $Y$. For this reason we would want $Y$ to be the last variable in the tree. The order of the other three variables is less obvious. We decide on the ordering $\boldsymbol{X} = (X_a, X_s, X_f, Y)$ which is supported by both BNs a) and c) in Fig~\ref{bayesnets}. 
+Fig~\ref{eventtree} illustrates an event tree defined on $\boldsymbol{X}$. To every node $v$ of this tree we can attach a floret parameter vector $\boldsymbol{\theta}_v$ thought of as a vector of conditional transition probabilities emanating from that situation. For instance, $\boldsymbol{\theta}_{v_{25}} = (0.935, 0.065)$ means that male drivers who passed their test after the age of 21 and reported to drive their car daily are estimated to have 6.5\% chances of being involved in at least one accident during their first 6 months after passing the test. 
+\begin{figure}
+\centering
+\input{figures/frequency-event-tree}
+\caption{Example of an event tree, $\mathcal{T}$, on four variables: age, sex, frequency of driving and accident involvement.}
+\label{eventtree}
+\end{figure}
+
+If two or more vectors of floret parameters take the same values less parameters are needed to describe the full probability distribution over $\mathcal{T}$. We can then merge situations sharing the same floret parameter vectors into \emph{stages} to obtain a new tree based model - a \emph{staged tree}.
+\begin{definition}[Staged Tree]
+Let $(\mathcal{T} , \boldsymbol{\theta}_{\mathcal{T}})$ with graph $\mathcal{T} = (V, E)$ and labels $ \boldsymbol{\theta}_{\mathcal{T}} = ( \boldsymbol{\theta}_v | v \in V)$ be a probability tree. Whenever two floret parameter vectors are equal $\boldsymbol{\theta}_v = \boldsymbol{\theta}_w$ up to a permutation of their components we say that their vertices v and w are in the same stage, for $v, w \in V$ . To every stage we assign one unique colour. A probability tree together with the partition of its vertices into stages is called a staged tree.
+\end{definition}
+Going back to our example, Fig~\ref{stagedtree} shows the staged tree obtained from the probability tree in Fig~\ref{eventtree}. In this example, colouring of the tree gives us the following set of stages:
+\begin{gather*}
+u_0 = \{v_0\}, u_1 = \{v_1\}, u_2 = \{v_2\}, u_3 = \{v_3\}, \\
+u_4 = \{v_4, v_5\}, u_5 = \{v_6, v_7, v_8, v_9\}, u_6 = \{v_{10}, v_{14}, v_{19}\}, \\
+u_7 = \{v_{11}, v_{15}, v_{16}, v_{17}, v_{20}, v_{25}, v_{27}\}, u_8 = \{v_{12}, v_{22}, v_{26}\}, \\ u_9 = \{v_{18}, v_{21}, v_{23}, v_{24}\}, u_{10} = \{v_{13}\}
+\end{gather*}
+In this example, stage $u_{8}$ (coloured red) includes females aged 16-18 driving between once a fortnight to once a week, females above the age of 21 driving daily and males above the age of 21 driving 1 to 3 days per week. All these groups of respondents share the same estimated probability of being involved in an accident: $\boldsymbol{\theta}_{u_8} = (0.981, 0.042)$. 
+\begin{figure}
+\centering
+\input{figures/frequency-staged-tree}
+\caption{Example of a staged event tree, $\mathcal{T}$, on four variables: age, sex, frequency of driving and accident involvement (colours only applied to positions which contain more than one node, otherwise grey).}
+\label{stagedtree}
+\end{figure}
+
+A coarser partition $W_{\mathcal{T}}$ of the vertices of a staged tree is given by the definition of \emph{positions}. We say two vertices $v, v'$ are in the same position, $w$, if their subtrees $(\mathcal{T}(v), \boldsymbol{\theta}_{\mathcal{T}(v)})$ and $(\mathcal{T}(v'), \boldsymbol{\theta}_{\mathcal{T}(v')})$ have the same topology such that there exeists a bijection between the edges of the two subtrees and the conditional probabilities associated with the corresponding edges are the same. \\
+In our example $v_4$ and $v_5$ are in the same stage, but not in the same position. While the topologies of the subtrees $\mathcal{T}(v_4)$ and $\mathcal{T}(v_5)$ are in a one-to-one correspondence the conditional probabilities downstream of $v_4$ and $v_5$ are not. 
+However, all the vertices of $u_9$ are both in the same stage and position. In fact the same holds for $u_6$, $u_7$, $u_8$ and $u_{10}$.
+Trivially it is always the case that all leaves are in the same position, denoted $w_\infty \in W_{\mathcal{T}}$ and called a \emph{sink node}. The root is the only element in a position $w_0 \in W_{\mathcal{T}}$ , also called the root.We can now construct the following graph:
+\begin{definition}
+Let $(\mathcal{T} , \boldsymbol{\theta}_{\mathcal{T}})$ be a staged tree with graph $\mathcal{T} = (V, E)$. Denote the set of positions of this tree by $W_{\mathcal{T}}$. We build a new labelled graph $(C(\mathcal{T}) , \boldsymbol{\theta}_{\mathcal{T}})$ as follows:
+$C(\mathcal{T}) = (W, F)$ is a graph with vertex set $W = W_{\mathcal{T}}$ given by the set of positions in the underlying staged tree. Every position inherits its colour from the staged tree. $F$ is a set of possibly multiple edges between these vertices with the following properties. If there exist edges $e = (v, v')$, $e' = (w, w') \in E$ and $v, w$ are in the same position, then there exist corresponding edges $f, f' \in F$. If also $v', w'$ are in the same position, then $f = f'$. The labels $\theta(f)$ of edges $f \in F$ in the new graph are inherited from the corresponding edges $e \in E$ in the staged tree $(\mathcal{T} , \boldsymbol{\theta}_{\mathcal{T}})$.
+We call the labelled graph $(C(\mathcal{T}) , \boldsymbol{\theta}_{\mathcal{T}})$ the Chain Event Graph (CEG) with underlying staged tree $(\mathcal{T} , \boldsymbol{\theta}_{\mathcal{T}})$.
+\end{definition}
+Following the above definition we transform the staged tree in Fig~\ref{stagedtree} to obtain a CEG structure given in Fig~\ref{ceg:freq-acc}. \\
+The graph from Fig~\ref{ceg:freq-acc} is a special type of a CEG - an \emph{ordinal} CEG as first defined in \cite{barclay2014missingness}, which is restricted to problems with a binary outcome variable occurring last in the tree. It provides, a more easily interpretable graphical representation of the standard CEG by imposing a particular ordering on the positions of the graph. An ordinal CEG with respect to $Y$ is a CEG where positions in each vertex subset associated with a variable $X_i$, are vertically aligned in descending order with respect to the predictive probability $\mathbb{P}(Y = 1|(C(\mathcal{T}) , \boldsymbol{\theta}_{\mathcal{T}}))$. \\
+This compact representation enables us to provide a plausible story of how different driver characteristics influence their risk of involvement in an accident, where the final conclusions can be easily read back to the client, who in this setting might be a member of an insurance company. 
+\begin{figure}
+\centering
+\input{figures/ceg-frequency}
+\caption{CEG derived from the staged tree in Fig~\ref{stagedtree} (colours only applied to positions which include more than one node of the underlying staged tree, otherwise grey).}
+\label{ceg:freq-acc}
+\end{figure}
+The predictive probabilities of an accident associated with the positions $w_{13}, w_{19}, w_{20}, w_{22}, w_{18}$ in the final layer of the CEG are: 13.6\%, 9.6\%, 6.5\%, 4.2\%, 1.9\% respectively.
+The ordinal CEG allows us to immediately identify the groups of respondents with highest accident liability: young men aged 16-18 driving everyday. Similarly, the group with second highest accident liability are men aged 16-18 driving 4-6 days per week, men aged 18-21 driving everyday and females aged 16-18 driving everyday. Another advantage of the ordinal CEG is that we can immediately tell that overall Male respondents are associated with higher risk of non-low speed accidents than Female respondents and that the younger groups of respondents ere associated with higher accident risk than older groups. Similar and perhaps more precise conclusions could be made by examining the coefficients of a generalised linear model, yet the CEG representation provides us with a framework for presenting these conclusions without having to rely on quantitative measures. 
+
+\subsection{Missing values}\label{subsec:missing}
+In the previous section we constructed a CEG model which allows us to categorise the drivers into a groups of increasing accident liability. We used three explanatory variables: age, sex and frequency. Instead of the frequency as a measure of exposure to road accidents we may instead rely on the reported mileage. However, out of the 9491 observations considered for this model 757 have a missing response to the question about the mileage. We may simply discard those observations and rely only on the remaining complete responses, yet CEGs allow us to not only include the incomplete observations into the model, but also to reason about the patterns of the missingness. For a more detailed discussion on the CEG models of missingness refer to \cite{barclay2014missingness}. 
+
+As previously, let $X_a$ describe the age, $X_s$ sex, and $Y$ the accident involvement during the first 6 months after passing the test. Let also $X_m$ describe the annualised mileage taking one of the three values coded as:  1 = above 12000, 2 = 4000 - 12000 miles, 3 = below 4000 miles. We further introduce a new variable $R_m$ indicating whether $X_m$ is missing or not. Fig~\ref{ceg:mis-miles} presents the most probable CEG found by the AHC algorithm on $\boldsymbol{X} = (X_a, X_s, R_m, X_m, Y)$. The positions $w_{27}, w_{29}, w_{48}, w_{19}$ in the final layer of the CEG are ordered with respect to the predictive probability of being involved in an accident: 14.1\%, 8.6\%, 4.9\%, 2.7\%, respectively.
+\begin{figure}
+\centering
+\input{figures/ceg-mis-miles}
+\caption{CEG on five variables $\boldsymbol{X} = (X_a, X_s, R_m, X_m, Y)$}
+\label{ceg:mis-miles}
+\end{figure}
+
+If the probability of $X_m$ missing is the same for all age-sex groups, then the data are said to be missing completely at random (MCAR). This would require that $R_m$ is independent of $X_s$ and $X_a$ and we would expect all positions on the level of the $R_m$ variable to be in the same stage. 
+This is not the case as in the trees from Fig~\ref{ceg:mis-miles} we can distinguish 3 different 
+stages for $R_m$. These correspond to the following groups of respondents: 
+blue: all men , yellow: women aged 16-21, and grey: women above the age of 21.
+Hence, the assumption that the data are MCAR is unlikely to hold. Between those three groups it is the women aged 16-21 who are the most likely not to provide an estimate for the miles driven (11\%), followed by women above the age of 21 (9\%), while the non-response to the question on miles among men is estimated to be about the level of 3\%. However, the data can be missing at random only conditionally on certain values of another variable. 
+From the CEG in Fig~\ref{ceg:mis-miles} we can observe that all men end up in the same stage on the $R_m$ level (blue). We can therefore deduce that:
+\[R_m \ind X_a \ | \ X_s = M\]
+That is, conditionally on the respondent being a male, the missingness of the mileage is independent of their age. If we were to hypothesise that among certain age groups, say the youngest drivers aged 16-18 the missingness of the mileage is independent of sex that is $R_m \ind  X_s \ | \ X_a = (16,18]$, then the two edges emanating from the node $w_1$ which corresponds to the 16-18 age group should lead to the same stage. Again, this is not the case as the edges lead to two different stages (blue and yellow). And so the hypothesis that the missingness of the mileage is independent of sex is therefore unlikely to be true, even conditionally on a particualar age group.
+
+When data are missing at random (MAR) the missingness process is independent of the missing values 
+given the observed values, so that 
+\[\mathbb{P}(R_m \ | \ X_s, X_a, X_m) =  \mathbb{P}(R_m \ | \ X_s, X_a)\]
+Under the assumption of MAR, the edges labelled "yes" emanating from the nodes corresponding to $R_m$ should lead to the stages whose predictive probability of accident involvement is a weighted average of the predictive probabilities of accident involvement for all levels of mileage (1, 2, 3) in a given age-sex groups. 
+This again is not the case. Interestingly, we observe that for all men, the missing mileage coincides with the positions of high mileage (above 12000 mi). Yet for all women, the missing mileage leads to the same positions as very low (below 4000 mi) or average (4000 - 12000 mi) mileage . To determine whether this means that data are unlikely to be MAR, it is necessary to additionally calculate the weighted average of the probability of an accident and compare this with the true probability of an accident for the missing category given an age-sex group. \\
+On the example of male drivers aged 19-21, under the CEG model considered, the predictive probability of an accident is 14.1\%, 8.6\% and 4.9\% given high, average and low mileage respectively. Hence, if the data are MAR a young man aged 19-21 for whom the mileage is missing should have an accident probability of $14.1 \times \frac{93}{865} + 8.6 \times \frac{349}{865} + 4.9 \times \frac{423}{865} = 7.4\%$ where among men aged 19-21 93 reported high mileage, 349 reported average mileage and 423 reported low mileage. However, we see that the edge describing the missingness of the mileage for men aged 19-21 leads to the same position as the edge for high mileage with noticeably higher predictive probability of (14.1\%). 
+
+\section{Modelling study drop-outs with CEGs}\label{sec:dropouts}
+As was already noted in Section~\ref{sec:cohortii} one major obstacle to treat the `Cohort II' as a longitudinal study is the dropping response rate within subsequent waves of the Driving Experience Questionnaire.
+In this section we apply Chain Event Graphs to represent various hypothesis about the patterns of non-response to the subsequent waves of the survey. Hence we let $X_0$ be the variable describing the gender of a respondent and $X_1, X_2, X_3, X_4$ be four binary variables indicating the response to surveys DEQ1, DEQ2, DEQ3 and DEQ4 respectively. Here, the most natural ordering of the variables is: $\boldsymbol{X} = (X_0, X_1, X_2, X_3, X_4)$. The corresponding event tree is a binary tree with five levels.
+
+\subsection{Representing possible models of non-reponse with CEGs}\label{subsec:dropouts-hypothesis}
+We now consider different assumptions about the patterns of non-response to the survey and express these hypothesis with adequate CEGs. 
+\begin{example}[Independence]
+\label{exm:independence}
+The simplest model one can think of is to assume that all the variables are independent of each other, i.e $\ind_{i=0}^{4}X_i$. In terms of an $\boldsymbol{X}$-compatible staged tree representation of the model, we would draw an event tree with binary florets where all florets which lie along the same level are also in the same stage. The corresponding CEG in Figure \ref{ceg:indep} is an $\boldsymbol{X}$-compatible representation of the binary independence model.
+\end{example}
+\begin{figure}
+\centering
+\input{figures/ceg-independence}
+\caption{$\boldsymbol{X}$-compatible CEG representation for the binary independence model from Example~\ref{exm:independence}}
+\label{ceg:indep}
+\end{figure}
+\begin{example}[Biased Coin]
+\label{exm:biascoin}
+Another simple hypothesis might be to model the responses to the questionnaires as a series of a possibly biased coin tosses, where the bias depends only on the sex of a respondent. That is, all women have the same probability of responding to every questionnaire and all men have the same probability of responding to every questionnaire. Because the `coin tosses' are assumed to be independent, all florets corresponding to the sub-tree of the event tree rooted at position corresponding to a single sex are in the same stage. The corresponding CEG in Figure \ref{ceg:biascoin} is an $\boldsymbol{X}$-compatible representation of the biased coin flip model.
+\end{example}
+\begin{figure}
+\centering
+\input{figures/ceg-biased-coin}
+\caption{$\boldsymbol{X}$-compatible CEG representation for the biased coin-flip model from Example~\ref{exm:biascoin}}
+\label{ceg:biascoin}
+\end{figure}
+\begin{example}[Counting Responses]
+\label{exm:counting-responses}
+In this example for simplicity we exclude $X_0$ (sex) from the model and instead draw our attention to the number of currently missing responses to the survey. Thus, let $\boldsymbol{X} = (X_1, X_2, X_3, X_4)$. The hypothesis of this example is as follows: Given the wave of the survey, the response to the next questionnaire depends only on the number of already recorded responses. 
+If we label the edges of the $\boldsymbol{X}$-compatible staged tree with 1 and 0 to indicate the presence of a response in every survey, then the vertices of the staged tree are in the same stage if and only if they are on the same level of the tree and the sum from the edges of their root-to-vertex paths is equal. Fig~\ref{ceg:counting-responses} represents the CEG for this hypothesis.
+\end{example}
+\begin{figure}
+\centering
+\input{figures/ceg-counting-responses}
+\vspace{1ex}
+\caption{$\boldsymbol{X}$-compatible CEG representation for the  model from Example~\ref{exm:counting-responses}}
+\label{ceg:counting-responses}
+\end{figure}
+
+\subsection{Best-scoring CEG of the non-reponse}\label{subsec:best-fit-dropout}
+In the previous section we presented several examples on how a modeller might approach the problem of missing responses and how these hypothesis might be expressed with a CEG. If these models were the only competing models we could use a scoring criterion such as the AIC or the Bayes Factor as described in \cite{smith2017cegs} for a bayesian approach in model selection, to choose the best model out of the three. However, from Table~\ref{tab:respondents-sex} we should not expect any of the three examples presented to be an adequate representation of the problem. We therefore introduce another model which was found using the AHC algorithm presented in Fig~\ref{ceg:ahc-responses}. Clearly the structure of this graph is less easy to interpret at first sight. However, the graph illustrates several asymmetries which allow us to draw a number of conclusions that are not obtainable from a regular BN.
+\begin{enumerate}[topsep=0pt]
+    \item The probability of response to the first survey is dependent on sex. The probability of response to the second survey is dependent on both the sex and the response to the previous survey.
+    \item Given that the pattern of responses to the first and second survey is $\{1, 0\}$, i.e. $X_1 = 0$ and $X_2 = 1$, the probability of responding to DEQ3 and DEQ4 is independent of sex. (The paths following edges $\{F, 0, 1\}$, $\{M, 0, 1\}$ are incident on position $w_{12}$).
+    \item Given that the pattern of responses to the first and second survey is $\{0, 1\}$, i.e. $X_1 = 1$ and $X_2 = 0$, the probability of responding to DEQ3 is the same for men and women (positions $w_{13}$ and $w_{9}$ are in the same stage), but the probability of responding to DEQ4 differs for men and women ($w_{13}$ and $w_{9}$ are in the same stage, but not merged into one node).
+\end{enumerate}
+\begin{figure}
+\centering
+\input{figures/ceg-full-responses}
+\vspace{1ex}
+\caption{The highest scoring CEG found by the AHC algorithm together with the transition probabilities (colours applied only to stages for which more than one situation of the underlying staged tree shares the same floret parameter vector $\boldsymbol{\theta}$)}
+\label{ceg:ahc-responses}
+\end{figure}
+By following the root to sink paths we can observe how the probability of responding to the next survey increases when the response to the previous survey was also recorded. However, due to the complexity of this graph it is not as easy to examine when presented in its full form. We therefore suggest a more compact representation by introducing a new variable $X_{1,2}$. taking values ${00, 01, 10, 11}$ which indicates the responses to the first two ways of the survey. The new CEG on $\boldsymbol{X} = (X_0, X_{1,2}, X_3, X_4)$ is presented on Fig~\ref{ceg:compact-responses}
+\begin{figure}
+\centering
+\input{figures/ceg-compact-responses}
+\vspace{1ex}
+\caption{Compact representation of the survey response model. (colours applied only to stages for which more than one situation of the underlying staged tree shares the same floret parameter vector $\boldsymbol{\theta}$)}
+\label{ceg:compact-responses}
+\end{figure}
+
+\section{Discretising continuous variables for CEG models}\label{sec:best-fit-dropout}
+TBD
+
+\section{Implementation}
+TBD
+
+\section{Discussion}
+TBD
+
+% Points to mention
+%  - Fallacy of using greedy (merging leads to biased conclusions, example hazard perception)
+%  - Not suitable for detecting subtle differences (differences in HP not detected, nodes merged together)
+
+
+% ---- Bibliography ----
+%
+\bibliographystyle{abbrv}
+\bibliography{biblio}
+%
+\end{document}

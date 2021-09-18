@@ -1,0 +1,33 @@
+\scalebox{0.9}{
+\begin{tikzpicture} [node distance = 2cm, on grid, auto, scale=0.7]
+\node (v0) [state] {$v_0$};
+\node (v1F) [state, above right = of v0, fill = col8] {$f_1$};
+\node (v2F) [state, right = of v1F, fill = col8] {$f_2$};
+\node (v3F) [state, right = of v2F, fill = col8] {$f_3$};
+\node (v4F) [state, right = of v3F, fill = col8] {$f_4$}; `  
+\node (v1M) [state, below right = of v0, fill = col5] {$m_1$};
+\node (v2M) [state, right = of v1M, fill = col5] {$m_2$};
+\node (v3M) [state, right = of v2M, fill = col5] {$m_3$};
+\node (v4M) [state, right = of v3M, fill = col5] {$m_4$};
+\node (w) [right = of v4] {$w_{\infty}$};
+\path [-stealth]
+    (v0) edge [bend left] node [above] {$F$} (v1F)
+    (v1F) edge [bend left] node [above] {yes} (v2F)
+    (v1F) edge [bend right] node [below] {no} (v2F)
+    (v2F) edge [bend left] node [above] {yes} (v3F)
+    (v2F) edge [bend right] node [below] {no} (v3F)
+    (v3F) edge [bend left] node [above] {yes} (v4F)
+    (v3F) edge [bend right] node [below] {no} (v4F)
+    (v4F) edge [bend left] node [above] {yes} (w)
+    (v4F) edge [right] node [below] {no} (w)
+    (v0) edge [bend right] node [below] {$M$} (v1M)
+    (v1M) edge [bend left] node [above] {yes} (v2M)
+    (v1M) edge [bend right] node [below] {no} (v2M)
+    (v2M) edge [bend left] node [above] {yes} (v3M)
+    (v2M) edge [bend right] node [below] {no} (v3M)
+    (v3M) edge [bend left] node [above] {yes} (v4M)
+    (v3M) edge [bend right] node [below] {no} (v4M)
+    (v4M) edge [left] node [above] {yes} (w)
+    (v4M) edge [bend right] node [below] {no} (w);
+\end{tikzpicture}
+}

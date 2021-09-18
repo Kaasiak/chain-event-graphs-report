@@ -1,0 +1,38 @@
+a)
+\begin{tikzpicture} [node distance = 1cm, on grid, auto, scale = 0.9]
+\node (x1) {$X_a$};
+\node (x2) [below right = of x1] {$X_s$};
+\node (x3) [above right = of x2] {$X_f$};
+\node (x4) [above right = of x1] {$Y$};
+\path [-stealth, thick]
+    (x1) edge [left] node {} (x2)
+    (x1) edge [left] node {} (x3)
+    (x1) edge [left] node {} (x4);
+\end{tikzpicture}
+\quad
+b)
+\begin{tikzpicture} [node distance = 1cm, on grid, auto, scale = 0.9]
+\node (x1) {$X_a$};
+\node (x2) [below right = of x1] {$X_s$};
+\node (x3) [above right = of x2] {$X_f$};
+\node (x4) [above right = of x1] {$Y$};
+\path [-stealth, thick]
+    (x1) edge [left] node {} (x2)
+    (x1) edge [left] node {} (x3)
+    (x1) edge [left] node {} (x4)
+    (x4) edge [left] node {} (x2)
+    (x3) edge [left] node {} (x4);
+\end{tikzpicture}
+\quad
+c)
+\begin{tikzpicture} [node distance = 1cm, on grid, auto, scale = 0.9]
+\node (x1) {$X_a$};
+\node (x2) [below right = of x1] {$X_s$};
+\node (x3) [above right = of x2] {$X_f$};
+\node (x4) [above right = of x1] {$Y$};
+\path [-stealth, thick]
+    (x1) edge [left] node {} (x2)
+    (x1) edge [left] node {} (x3)
+    (x1) edge [left] node {} (x4)
+    (x3) edge [left] node {} (x4);
+\end{tikzpicture}

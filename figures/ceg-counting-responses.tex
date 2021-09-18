@@ -1,0 +1,36 @@
+\scalebox{0.9}{
+\begin{tikzpicture} [node distance = 2cm, on grid, auto, scale = 0.7]
+\node (v0) [state] {$w_0$};
+\node (v10) [state, below right = of v0, fill = col1] {$w_{1,0}$};
+\node (v11) [state, above right = of v0, fill = col2] {$w_{1,1}$};
+\node (v20) [state, below right = of v10, fill = col3] {$w_{2,0}$};
+\node (v21) [state, above right = of v10, fill = col4] {$w_{2,1}$};
+\node (v22) [state, above right = of v11, fill = col5] {$w_{2,2}$};
+\node (v30) [state, below right = of v20, fill = col6] {$w_{3,0}$};
+\node (v31) [state, above right = of v20, fill = col7] {$w_{3,1}$};
+\node (v32) [state, below right = of v22, fill = col8] {$w_{3,2}$};
+\node (v33) [state, above right = of v22, fill = col9] {$w_{3,3}$};
+\node (w) [below right = 5cm of v33] {$w_{\infty}$};
+\path [-stealth]
+    (v0) edge [left] node [above] {0} (v10)
+    (v0) edge [left] node [above] {1} (v11)
+    (v10) edge [left] node [above] {0} (v20)
+    (v10) edge [left] node [above] {1} (v21)
+    (v11) edge [left] node [above] {0} (v21)
+    (v11) edge [left] node [above] {1} (v22)
+    (v20) edge [left] node [above] {0} (v30)
+    (v20) edge [left] node [above] {1} (v31)
+    (v21) edge [left] node [above] {0} (v31)
+    (v21) edge [left] node [above] {1} (v32)
+    (v22) edge [left] node [above] {0} (v32)
+    (v22) edge [left] node [above] {1} (v33)
+    (v30) edge [bend right] node [above] {0} (w)
+    (v30) edge [left] node [above] {1} (w)
+    (v31) edge[bend left=10,auto=right] node [above] {1} (w)
+    (v31) edge[bend right=10,auto=right] node [above] {0} (w)
+    (v32) edge [bend left=10,auto=right] node [above] {1} (w)
+    (v32) edge [bend right=10,auto=right] node [above] {0} (w)
+    (v33) edge [right] node [above] {0} (w)
+    (v33) edge [bend left] node [above] {1} (w);
+\end{tikzpicture}
+}
