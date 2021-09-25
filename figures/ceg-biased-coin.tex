@@ -1,15 +1,20 @@
 \scalebox{0.9}{
-\begin{tikzpicture} [node distance = 2cm, on grid, auto, scale=0.7]
-\node (v0) [state] {$v_0$};
-\node (v1F) [state, above right = of v0, fill = col8] {$f_1$};
-\node (v2F) [state, right = of v1F, fill = col8] {$f_2$};
-\node (v3F) [state, right = of v2F, fill = col8] {$f_3$};
-\node (v4F) [state, right = of v3F, fill = col8] {$f_4$}; `  
-\node (v1M) [state, below right = of v0, fill = col5] {$m_1$};
-\node (v2M) [state, right = of v1M, fill = col5] {$m_2$};
-\node (v3M) [state, right = of v2M, fill = col5] {$m_3$};
-\node (v4M) [state, right = of v3M, fill = col5] {$m_4$};
+\begin{tikzpicture} [node distance = 2cm, on grid, auto]
+\node (v0) [state] {$w_0$};
+\node (v1F) [state, above right = of v0, fill = col8] {$w_{f,1}$};
+\node (v2F) [state, right = of v1F, fill = col8] {$w_{f,2}$};
+\node (v3F) [state, right = of v2F, fill = col8] {$w_{f,3}$};
+\node (v4F) [state, right = of v3F, fill = col8] {$w_{f,4}$}; `  
+\node (v1M) [state, below right = of v0, fill = col5] {$w_{m,1}$};
+\node (v2M) [state, right = of v1M, fill = col5] {$w_{m,2}$};
+\node (v3M) [state, right = of v2M, fill = col5] {$w_{m,3}$};
+\node (v4M) [state, right = of v3M, fill = col5] {$w_{m,4}$};
 \node (w) [right = of v4] {$w_{\infty}$};
+\draw  (0,-2.5) node(x0) {Sex};
+\draw  (1.41,-2.5) node(x1) {DEQ1};
+\draw  (3.41,-2.5) node(x2) {DEQ2};
+\draw  (5.41,-2.5) node(x3) {DEQ3};
+\draw  (7.41, -2.5) node(x4) {DEQ4};
 \path [-stealth]
     (v0) edge [bend left] node [above] {$F$} (v1F)
     (v1F) edge [bend left] node [above] {yes} (v2F)

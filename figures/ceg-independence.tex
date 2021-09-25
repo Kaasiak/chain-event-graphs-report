@@ -6,6 +6,11 @@
 \node (v3) [state, right = of v2, fill = col6] {$w_3$};
 \node (v4) [state, right = of v3, fill = col7] {$w_4$};
 \node (w) [right = of v4] {$w_{\infty}$};
+\draw  (0,-1.3) node(x0) {Sex};
+\draw  (2,-1.3) node(x1) {DEQ1};
+\draw  (4,-1.3) node(x2) {DEQ2};
+\draw  (6,-1.3) node(x3) {DEQ3};
+\draw  (8,-1.3) node(x4) {DEQ4};
 \path [-stealth]
     (v0) edge [bend left] node [above] {$F$} (v1)
     (v0) edge [bend right] node [below] {$M$} (v1)
