@@ -19,6 +19,7 @@
 \usepackage{subcaption}
 \usepackage{minted}
 \usepackage{hyperref}
+
 \hypersetup{
     colorlinks=true,
     citecolor=red,
@@ -49,8 +50,27 @@
 \definecolor{lightgrey}{rgb}{0.83, 0.83, 0.83}
 \pgfplotsset{compat=1.14}
 
-\newcommand{\ind}{\perp\!\!\!\!\perp}
-\newcommand{\notind}{\not\!\perp\!\!\!\perp}
+% Independence symbols
+\makeatletter
+\newcommand*{\centernot}{%
+  \mathpalette\@centernot
+}
+\def\@centernot#1#2{%
+  \mathrel{%
+    \rlap{%
+      \settowidth\dimen@{$\m@th#1{#2}$}%
+      \kern.5\dimen@
+      \settowidth\dimen@{$\m@th#1=$}%
+      \kern-.5\dimen@
+      $\m@th#1\not$%
+    }%
+    {#2}%
+  }%
+}
+\makeatother
+\newcommand{\ind}{\perp\mkern-9.5mu\perp}
+\newcommand{\notind}{\centernot{\ind}}
+
 
 \newcommand{\card}[1]{\left\vert{#1}\right\vert}
 \newcommand*\Let[2]{\State #1 $\gets$ #2}
@@ -67,7 +87,7 @@
 \begin{document}
 
 
-\title{Chain Event Graphs - subtitle}
+\title{Modelling with Chain Event Graphs}
 
 
 %
@@ -75,7 +95,7 @@
 % If the paper title is too long for the running head, you can set
 % an abbreviated paper title here
 %
-\author{Katarzyna Kobalczyk\inst{1}}
+\author{Katarzyna Kobalczyk}
 %
 %\authorrunning{F. Author et al.}
 % First names are abbreviated in the running head.
@@ -88,9 +108,9 @@
 \maketitle
 %
 \begin{abstract}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed massa sem, fringilla auctor rhoncus vitae, mollis eget elit. Donec auctor enim eu tempor luctus. Nulla ultrices sagittis ex malesuada rhoncus. Nulla fringilla velit a ligula mattis, at placerat justo ornare. Etiam faucibus tellus sed turpis efficitur consequat. Vestibulum non massa eu lorem aliquam efficitur. Cras volutpat convallis nisi ut blandit. Curabitur sit amet erat rutrum, efficitur lectus sagittis, tempor ipsum. Vestibulum elementum, urna ut bibendum commodo, odio libero ultrices risus, vel ornare tortor eros nec eros. Ut varius elementum risus. Aenean mi erat, feugiat eu blandit eget, interdum eu eros. Nam laoreet dui ex, non dignissim elit rutrum vitae. Donec feugiat lacus ac erat hendrerit consequat. Aenean ut tellus purus.
+Chain Event Graphs (CEGs) are a family of graphical statistical models derived from well-known probability trees. They form a generalisation of Bayesian Networks, providing an explicit representation of context-specific conditional dependencies within their topology. This report demonstrates on a real cohort study how CEGs enable us to depict various hypotheses about the data generation mechanisms. We argue that CEGs,  in contrast to the standard framework of generalised linear models, can exhibit dependencies between multiple variables in a much more intuitive way. We also present how CEGs can be used for statistical inference with incomplete data set, identifying if the data are missing at random and extracting further conclusions from the patterns of missingness. We additionally discuss the problem of data discretisation and propose a method for supervised discretisation without leaving the framework of tree-based models.
 
-\keywords{Chain Event Graphs, Missing Data, Missing Not at Random, Continuous Variables in Discrete Graphical Models}
+\keywords{Chain Event Graphs, Missing data, Missing not at random, Data discretisation, Tree-based models}
 \end{abstract}
 
 %
@@ -100,7 +120,11 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed massa sem, fringill
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
-TBD
+There is a lot of potential in statistical models which are based on graphical representations of a problem providing an excellent way of explaining dependencies and interactions between multiple variables. They may be a useful approach to translating questions such as `Do responses by novice drivers to surveys about accidents depend on age and skill?' or `Is the missingness of responses among selected groups of respondents caused purely by chance?'
+
+In particular, the Bayesian network was developed to give a way of representing complex relationships in real problems informed by data and expert judgements. However, the Bayesian network has its limitations. It may not necessarily be an easy, natural or even feasible method to use in specific problem descriptions. Tree diagrams are widely used in many disciplines, especially in computer science, probability and decision theory, to depict the structure of a process. They offer a practical tool with profound representational power and can be used as a framework for transforming an explanation of a process into a well-defined probability model. By adding colours to the edges and vertices of the event trees and transforming their graphs, we can derive a new, richer class of models called Chain Event Graphs (CEGs). This class of models can be used for analysing a wide range of problems in a coherent, comprehensive and transparent manner with the advantage that the conclusions can be easily read back to the decision-maker.
+
+This report presents Chain Event Graphs in different modelling scenarios on the example of a particular study of learners and new drivers carried out by the British Department for Transport. The report begins with a description of the cohort study forming the basis of this analysis. Section~\ref{sec:graphicalintro} provides an introduction to graphical models, specifically the Bayesian networks. In section~\ref{sec:cegs}, we introduce Chain Event Graphs and simultaneously apply this framework in the context of modelling the accident liability of new drivers who took part in the study. In section~\ref{sec:missing} we show how CEGs can become useful in the case of incomplete data set containing missing values. We demonstrate how CEGs can help us identify different types of missingness (MCAR, MAR, MNAR) and how we can deduce directly from the graph that the MAR and MNAR assumptions are unlikely to hold. We also give an overview of how various hypotheses about the mechanisms behind missing responses in the study can be represented explicitly with CEGs. We further analyse the best fitting CEG and transform it to a more compact form allowing for a more transparent representation. Section~\ref{sec:discretise} contains a discussion on transforming a continuously distributed random variable into its discrete analogue and the data pre-processing steps involved. We present how staged trees can be directly used to define alternative partitions of the sample space without losing on the parsimony of the models.  We demonstrate how the proposed method can generate CEG models which score significantly better compared to CEG models based on data split into bins of equal frequencies. Finally, in section~\ref{sec:discussion}, we discuss the issues encountered during the research, conclusions from the project and possible improvements to the methods presented in the report. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -168,16 +192,16 @@ A & 3001 & 1247 & 696 & 506 & 342 & 323 \\
 \end{table}
 The proportion of female and male respondents to the surveys was imbalanced with 26776 (62.5\%) female and 16078 (37.5\%) male respondents to the initial Learning to Drive Questionnaire (LTDQ). The proportion of men among the respondents was steadily decreasing in each subsequent waves of the Driving Experience Questionnaire. Section \ref{subsec:dropouts} presents how CEGs can become useful in expressing possible hypothesis about the missingness of the responses.
 
-One of the objective of the `Cohort II' study was to determine the influence of a range of variables on young drivers’ accident liability. The original report from the study concludes with a multivariate regression model describing the relationship between key driver's characteristics and the number of reported accidents. It introduces a `base model' on four variables: sex, age, experience and exposure. Later additional variables are added to the `base model' and by the means of statistical significance testing the factors which influence accident liability are identified. In this modelling context, age is taken as the age at which the respondent passed the practical driving test. The experience measure is the number of years the respondent has been driving. Exposure is a composite measure that includes the annualised mileage driven within the reporting period plus 10 times the annualised number of days on which the driver has driven; derived artificially to optimise the fit of the models. 
-In section \ref{subsec:treemodels} we present how Chain Event Graphs, in particular Ordered Chain Event Graphs, can be used as an alternative to classical Generalised Linear Modelling, using the Cohort II study as an example. We argue that CEGs can represent dependencies between multiple variables in an easier to interpret way than what can usually be achieved through a careful examination of the interaction coefficients of a GLM model. Additionally, standard GLM approaches require the data to contain only complete observations. In section \ref{sec:missing} we discuss how CEGs can provide a framework for including observations with missing values, identifying if the data are missing at random and extracting further conclusions from the patterns of missingness.
-Due to the decreasing number of respondents in every iteration of the survey, in Section \ref{sec:cegs} we only consider the first wave of the Driver Experience Questionnaire - up to 6 months after passing the driving test (DEQ1). For modelling changes in probability distributions over time dynamic extensions of Chain Event Graphs have recently been developed \cite{barclay2015dynamic,collazo2017thesis}, although their application is beyond the scope of this report.
+One of the objective of the `Cohort II' study was to determine the influence of a range of variables on young drivers’ accident liability. The original report from the study \cite{TRL2008cohortii} concludes with a multivariate regression model describing the relationship between key driver's characteristics and the number of reported accidents. It introduces a `base model' on four variables: sex, age, experience and exposure. Later additional variables are added to the `base model' and by the means of statistical significance testing the factors which influence accident liability are identified. In this modelling context, age is taken as the age at which the respondent passed the practical driving test. The experience measure is the number of years the respondent has been driving. Exposure is a composite measure that includes the annualised mileage driven within the reporting period plus 10 times the annualised number of days on which the driver has driven; derived artificially to optimise the fit of the models. 
+In section \ref{subsec:treemodels} we present how Chain Event Graphs, in particular Ordinal Chain Event Graphs, can be used as an alternative to classical Generalised Linear Modelling, using the Cohort II study as an example. We argue that CEGs can represent dependencies between multiple variables in an easier to interpret way than what can usually be achieved through a careful examination of the interaction coefficients of a GLM model. Additionally, standard GLM approaches require the data to contain only complete observations. In section \ref{sec:missing} we discuss how CEGs can provide a framework for including observations with missing values, identifying if the data are missing at random and extracting further conclusions from the patterns of missingness.
+Due to the decreasing number of respondents in every iteration of the survey, in section \ref{sec:cegs} we only consider the first wave of the Driver Experience Questionnaire - up to 6 months after passing the driving test (DEQ1). For modelling changes in probability distributions over time dynamic extensions of Chain Event Graphs have recently been developed \cite{barclay2015dynamic,collazo2017thesis}, although their application is beyond the scope of this report.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Introduction to Graphical Models
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Introduction to graphical models}\label{subsec:graphicalintro}
+\section{Introduction to graphical models}\label{sec:graphicalintro}
 A graphical model is a probabilistic model for which a graph expresses the conditional dependence structure between random variables. Probabilistic graphical models use a graph-based representation as the foundation for encoding a distribution over a multi-dimensional space and set of independence assumptions that hold within a given distribution. These representations sit at the intersection of statistics and computer science, relying on concepts from probability theory and graph algorithms. The graphical structure of these models make them a particularly useful tool for dealing with complex dependencies between many variables; therefore, they have been employed in many real-world applications, including recent advancements in machine learning for medical diagnosis or speech recognition.
 
 \subsection{Bayesian networks}\label{subsec:bayesiannetworks}
@@ -198,15 +222,15 @@ We make the above definition concrete with an example from the `Cohort~II' study
 \caption{Three plausible Bayesian Networks for the `Cohort II' data set.}
 \label{bayesnets}
 \end{figure}
-The graphical represntaion allows us to directly read off the conditional independence assumptions from the DAGs in Fig~\ref{bayesnets}. For example, in a) we have that $Y \ind X_f, X_s \ | \ X_a$ and that the factorisation of the joint probability mass function of $(X_a, X_s, X_f, Y)$ is given by:
+The graphical representation allows us to directly read off the conditional independence assumptions from the DAGs in Fig~\ref{bayesnets}. For example, in a) we have that $Y \ind X_f, X_s \ | \ X_a$ and that the factorisation of the joint probability mass function of $(X_a, X_s, X_f, Y)$ is given by:
 \[p(x_a, x_s, x_f, y) = p(x_a)p(x_t|x_a)p(x_f|x_a)p(y|x_a)\]
-In b) we have that $X_x \ind X_f \ | \ X_a, Y$ and the mass function with ordering $(X_a, X_f, Y, X_x)$ factorises as:
+In b) we have that $X_s \ind X_f \ | \ X_a, Y$ and the mass function with ordering $(X_a, X_f, Y, X_s)$ factorises as:
 \[p(x_a, x_s, x_f, y) = p(x_a)p(x_f|x_a)p(y|x_a, x_f)p(x_s|x_a, y)\]
-Observe that the ordering $(X_a, X_f, Y, X_x)$ in a) would give the same graph and the same factorisation of $p(x_a, X_s, x_f, y)$, but the ordering $(X_a, X_s, X_f, Y)$ is not compatible with the BN from b). We cannot necessarily read a unique ordering from a DAG of a BN but all such orderings must correspond to the same factorisation.
+Observe that the ordering $(X_a, X_f, Y, X_s)$ in a) would give the same graph and the same factorisation of $p(x_a, x_s, x_f, y)$, but the ordering $(X_a, X_s, X_f, Y)$ is not compatible with the BN from b). We cannot necessarily read a unique ordering from a DAG of a BN but all such orderings must correspond to the same factorisation.
 Finally in c) we have that $Y \ind X_s \ | \ X_a$  but contrary to the DAG in a) $Y \notind X_f\ | \ X_a$. A possible ordering of the variables in c) is $(X_a, X_s, X_f, Y)$ with the joint probability mass function factorising as:
 \[p(x_a, x_s, x_f, y) = p(x_a)p(x_s|x_a)p(x_f|x_a)p(y|x_a, x_f)\]
 
-It is now clear how a Bayesian network representation can easily encode some conditional independence statements of the model. More conditional independence statements can be inferred from the graph using a d-separation property - the formal definition of which can be found in \cite{} - and through a more detailed examination of the conditional probability tables.
+It is now clear how a Bayesian network representation can easily encode some conditional independence statements of the model. More conditional independence statements can be inferred from the graph using a d-separation property - the formal definition of which can be found in \cite{smith2017cegs} - and through a more detailed examination of the conditional probability tables.
 However, in certain cases, the BN does not provide a rich enough structure to incorporate all information obtainable from the data set. This is the case, for example, when the conditional independence statements of the problem are asymmetric. In our example, we might want to encode the following assumptions that $Y \ind X_s\ | \ X_f = \text{Everyday}$ but $Y \notind X_s\ | \ X_f = \text{4-6 days per week}$. Asymmetric assumption of this kind cannot be represented simply by the directed edges between variables in the BN. This motivates the introduction of a new class of graphical models. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -226,7 +250,7 @@ A finite graph denoted as a pair $\mathcal{T} = (V,E)$ with vertex set $V$ and e
 Let $\mathcal{T} = (V, E)$ be an event tree with parameters $\theta(e) = \theta(v, v')$ associated to all edges $e = (v, v') \in E$. We call the vector $\boldsymbol{\theta}_v = (\theta(e)| e \in E(v))$ of all parameters associated to the same floret a vector of floret parameters. If all labels are strictly positive probabilities and the components of all floret parameter vectors sum to unity, so  $\theta(e) \in (0,1)$ and $\sum_{e \in E(v)}\theta(e) = 1$ for all $e \in E$ and all non-leaves $v \in V$, then the pair
 $(\mathcal{T}, \boldsymbol{\theta}_{\mathcal{T}})$ of graph $\mathcal{T}$ and vector of all labels $\boldsymbol{\theta}_{\mathcal{T}} = (\theta(e)| e \in E))$ is called a probability tree.
 \end{definition}
-Tree-based models are especially useful where there exist a natural ordering of the variables of interest. In our example we want to gain knowledge about the influence of $X_a, X_s, X_f$ on the target variable $Y$. For this reason, we would want $Y$ to be the last variable in the tree. The order of the other three variables is less obvious. We decide on the ordering $\boldsymbol{X} = (X_a, X_s, X_f, Y)$ which is supported by both BNs a) and c) in Fig~\ref{bayesnets}. 
+Tree-based models are especially useful where there exists a natural ordering of the variables of interest. In our example we want to gain knowledge about the influence of $X_a, X_s, X_f$ on the target variable $Y$. For this reason, we would want $Y$ to be the last variable in the tree. The order of the other three variables is less obvious. We decide on the ordering $\boldsymbol{X} = (X_a, X_s, X_f, Y)$ which is supported by both BNs a) and c) in Fig~\ref{bayesnets}. 
 Fig~\ref{eventtree} illustrates an event tree defined on $\boldsymbol{X}$. To every node $v$ of this tree, we can attach a floret parameter vector $\boldsymbol{\theta}_v$ thought of as a vector of conditional transition probabilities emanating from that situation. For instance, $\boldsymbol{\theta}_{v_{25}} = (0.935, 0.065)$ means that male drivers who passed their test after the age of 21 and reported driving their car daily are estimated to have a 6.5\% chance of being involved in at least one accident during their first 6 months after passing the test. 
 \begin{figure}
 \centering
@@ -239,13 +263,13 @@ If two or more vectors of floret parameters take the same values, fewer paramete
 \begin{definition}[Staged Tree]
 Let $(\mathcal{T} , \boldsymbol{\theta}_{\mathcal{T}})$ with graph $\mathcal{T} = (V, E)$ and labels $ \boldsymbol{\theta}_{\mathcal{T}} = ( \boldsymbol{\theta}_v | v \in V)$ be a probability tree. Whenever two floret parameter vectors are equal $\boldsymbol{\theta}_v = \boldsymbol{\theta}_w$ up to a permutation of their components we say that their vertices v and w are in the same stage, for $v, w \in V$ . To every stage we assign one unique colour. A probability tree together with the partition of its vertices into stages is called a staged tree.
 \end{definition}
-In all of the graphs presented in this report colours are only applied to stages including more than one node. If nodes are not coloured then they are assumed to be in separate stages. Fig~\ref{stagedtree} shows the fitted staged tree obtained from the probability tree in Fig~\ref{eventtree}. Stages were found using the AHC algorithm, the details of which can be found in \cite{freemansmith2011} and which is further discussed in section~\ref{sec:discretise}. In this example, colouring of the tree gives us the following set of stages:
+In all of the graphs presented in this report colours are only applied to stages including more than one node. If nodes are not coloured, they are assumed to be in separate stages. Fig~\ref{stagedtree} shows the fitted staged tree obtained from the probability tree in Fig~\ref{eventtree}. Stages were found using the AHC algorithm, the details of which can be found in \cite{freemansmith2011} and which is further discussed in section~\ref{sec:discretise}. In this example, colouring of the tree gives us the following set of stages:
 \begin{gather*}
 u_0 = \{v_0\}, u_1 = \{v_1\}, u_2 = \{v_2\}, u_3 = \{v_3\}, \\
-u_4 = \{v_4, v_5\}, u_5 = \{v_6, v_7, v_8, v_9\}, u_6 = \{v_{10}, v_{14}, v_{19}\}, \\
-u_7 = \{v_{11}, v_{15}, v_{16}, v_{17}, v_{20}, v_{25}, v_{27}\}, u_8 = \{v_{12}, v_{22}, v_{26}\}, \\ u_9 = \{v_{18}, v_{21}, v_{23}, v_{24}\}, u_{10} = \{v_{13}\}
+\colorbox{col1}{$u_4$} = \{v_4, v_5\}, \colorbox{col2}{$u_4$}  = \{v_6, v_7, v_8, v_9\}, \colorbox{col3}{$u_6$}  = \{v_{10}, v_{14}, v_{19}\}, \\
+\colorbox{col6}{$u_7$}  = \{v_{11}, v_{15}, v_{16}, v_{17}, v_{20}, v_{25}, v_{27}\},\colorbox{col4}{$u_8$}  = \{v_{12}, v_{22}, v_{26}\}, \\ \colorbox{col5}{$u_9$}  = \{v_{18}, v_{21}, v_{23}, v_{24}\}, u_{10} = \{v_{13}\}
 \end{gather*}
-Stage $u_{8}$ (coloured red) includes females aged 16-18 driving between once a fortnight to once a week, females above the age of 21 driving daily and males above the age of 21 driving 1 to 3 days per week. All these groups of respondents share the same floret paramter vector $\boldsymbol{\theta}_{u_8} = (0.981, 0.042)$ which corresponds to an estimated probability of being involved in an accident of 4.2\%. 
+Stage $u_{8}$ (coloured red) includes women aged 16-18 driving between once a fortnight to once a week, women above the age of 21 driving daily and males above the age of 21 driving 1 to 3 days per week. All these groups of respondents share the same floret paramter vector $\boldsymbol{\theta}_{u_8} = (0.981, 0.042)$ corresponding to an estimated probability of being involved in an accident of 4.2\%. 
 \begin{figure}
 \centering
 \input{figures/frequency-staged-tree}
@@ -256,41 +280,42 @@ Stage $u_{8}$ (coloured red) includes females aged 16-18 driving between once a 
 A coarser partition $W_{\mathcal{T}}$ of the vertices of a staged tree is given by the definition of \emph{positions}. We say two vertices $v, v'$ are in the same position, $w$, if their subtrees $(\mathcal{T}(v), \boldsymbol{\theta}_{\mathcal{T}(v)})$ and $(\mathcal{T}(v'), \boldsymbol{\theta}_{\mathcal{T}(v')})$ have the same topology such that there exeists a bijection between the edges of the two subtrees and the conditional probabilities associated with the corresponding edges are the same. \\
 In the above example, $v_4$ and $v_5$ are in the same stage, but not in the same position. While the topologies of the subtrees $\mathcal{T}(v_4)$ and $\mathcal{T}(v_5)$ are in a one-to-one correspondence, the conditional probabilities downstream of $v_4$ and $v_5$ are not. However, all the vertices of $u_6$ are both in the same stage and position. In fact the same trivially holds for $u_7$, $u_8$, $u_9$ and $u_{10}$. 
 In this example, there are no non-trivial positions. If, however, node $v_{16}$ would be coloured in purple (i.e. belong to stage $u_6$), then nodes $v_6$ and $v_7$ could be merged into the same position; $v_6$ and $v_7$ are in the same stage, and the subtrees $\mathcal{T}(v_6)$ and $\mathcal{T}(v_7)$ together with the conditional probabilities associated with their edges would be in a one-to-one correspondence. 
-Observe that that all leaves are always in the same position, which we denote as $w_\infty \in W_{\mathcal{T}}$ and call a \emph{sink node}. The root is always the only element in position $w_0 \in W_{\mathcal{T}}$ , also called the root. We can now construct the following graph:
+All leaves are always in the same position, which we denote as $w_\infty \in W_{\mathcal{T}}$ and call a \emph{sink node}. The root is always the only element in position $w_0 \in W_{\mathcal{T}}$ , also called the root. We can now construct the following graph:
 \begin{definition}[Chain Event Graph]
 Let $(\mathcal{T} , \boldsymbol{\theta}_{\mathcal{T}})$ be a staged tree with graph $\mathcal{T} = (V, E)$. Denote the set of positions of this tree by $W_{\mathcal{T}}$. We build a new labelled graph $(C(\mathcal{T}) , \boldsymbol{\theta}_{\mathcal{T}})$ as follows:
 $C(\mathcal{T}) = (W, F)$ is a graph with vertex set $W = W_{\mathcal{T}}$ given by the set of positions in the underlying staged tree. Every position inherits its colour from the staged tree. $F$ is a set of possibly multiple edges between these vertices with the following properties. If there exist edges $e = (v, v')$, $e' = (w, w') \in E$ and $v, w$ are in the same position, then there exist corresponding edges $f, f' \in F$. If also $v', w'$ are in the same position, then $f = f'$. The labels $\theta(f)$ of edges $f \in F$ in the new graph are inherited from the corresponding edges $e \in E$ in the staged tree $(\mathcal{T} , \boldsymbol{\theta}_{\mathcal{T}})$.
 We call the labelled graph $(C(\mathcal{T}) , \boldsymbol{\theta}_{\mathcal{T}})$ the Chain Event Graph (CEG) with underlying staged tree $(\mathcal{T} , \boldsymbol{\theta}_{\mathcal{T}})$.
 \end{definition}
-Following the above definition, we transform the staged tree in Fig~\ref{stagedtree} to obtain a CEG structure given in Fig~\ref{ceg:freq-acc}. The graph from Fig~\ref{ceg:freq-acc} is a special type of a CEG - an \emph{ordinal} CEG -  as first defined in \cite{barclay2014missingness} - which is restricted to problems with a binary outcome variable occurring last in the txree. It provides a more easily interpretable graphical representation of the standard CEG by imposing a particular ordering on the positions of the graph. An ordinal CEG with respect to $Y$ is a CEG where positions in each vertex subset associated with a variable $X_i$, are vertically aligned in descending order with respect to the predictive probability $\mathbb{P}(Y = 1|(C(\mathcal{T}) , \boldsymbol{\theta}_{\mathcal{T}}))$. \\
+Following the above definition, we transform the staged tree in Fig~\ref{stagedtree} to obtain a CEG structure given in Fig~\ref{ceg:freq-acc}. The graph from Fig~\ref{ceg:freq-acc} is a special type of a CEG - an \emph{ordinal} CEG -  as first defined in \cite{barclay2014missingness} - which is restricted to problems with a binary outcome variable occurring last in the tree. It provides a more easily interpretable graphical representation of the standard CEG by imposing a particular ordering on the positions of the graph. An ordinal CEG with respect to $Y$ is a CEG where positions in each vertex subset associated with a variable $X_i$, are vertically aligned in descending order with respect to the predictive probability $\mathbb{P}(Y = 1|(C(\mathcal{T}) , \boldsymbol{\theta}_{\mathcal{T}}))$. \\
 This compact representation enables us to provide a plausible story of how different driver characteristics influence their risk of involvement in an accident, where the conclusions can be easily read off directly from the CEG.
 \begin{figure}
 \centering
 \input{figures/ceg-frequency}
 \caption{CEG derived from the staged tree in Fig~\ref{stagedtree}.}
 \label{ceg:freq-acc}
+\vspace{3ex}
 \end{figure}
-The predictive probabilities of an accident associated with the positions $w_{13}, w_{19}, w_{20}, w_{22}, w_{18}$ in the final layer of the CEG are: 13.6\%, 9.6\%, 6.5\%, 4.2\%, 1.9\% respectively.
-The ordinal CEG allows us to immediately identify the groups of respondents with the highest accident liability: young men aged 16-18 driving every day. Similarly, the group with the second highest accident liability are men aged 16-18 driving 4-6 days per week, men aged 18-21 driving every day and females aged 16-18 driving every day. Another advantage of the ordinal CEG is that we can immediately observe that overall male respondents are associated with a higher risk of non-low speed accidents than female respondents and that the younger groups of respondents are associated with higher accident risk than the older groups. Similar and inarguably more precise conclusions could be made by examining the coefficients of a generalised linear model, yet the CEG representation provides us with a framework for presenting these conclusions without having to introduce the quantitative measures. 
+The predictive probabilities of an accident associated with the positions $w_{13}, w_{19}, w_{27}, w_{22}, w_{23}$ in the final layer of the CEG are: 13.6\%, 9.6\%, 6.5\%, 4.2\%, 1.9\% respectively.
+The ordinal CEG allows us to immediately identify the groups of respondents with the highest accident liability: young men aged 16-18 driving every day. Similarly, the group with the second highest accident liability are men aged 16-18 driving 4-6 days per week, men aged 18-21 driving every day and women aged 16-18 driving every day. Another advantage of the ordinal CEG is that we can immediately observe that overall male respondents are associated with a higher risk of non-low speed accidents than female respondents and that the younger groups of respondents are associated with higher accident risk than the older groups. Similar and arguably more precise conclusions could be made by examining the coefficients of a generalised linear model, yet the CEG representation provides us with a framework for presenting these conclusions without having to introduce the quantitative measures. 
 
 \section{Chain Event Graphs and missing values}\label{sec:missing}
 
 \subsection{Missingness of the mileage}\label{subsec:missing-miles}
-In the previous section, we constructed a CEG model which allows us to categorise the drivers into groups of increasing accident liability. We used three explanatory variables: age, sex and frequency. Instead of the frequency as a measure of exposure to road accidents, we may instead choose to rely on the reported mileage. However, out of the 9491 observations considered for this model 757 have a missing response to the question about the mileage. Those observations could simply be discarded, yet CEGs allow for not only including the incomplete observations into the model but also to reason about the patterns of the missingness. For a more detailed discussion on the CEG models of missingness refer to \cite{barclay2014missingness}. 
+In the previous section, we constructed a CEG model which allows us to categorise the drivers into groups of increasing accident liability. We used three explanatory variables: age, sex and frequency. Instead of the frequency as a measure of exposure to road accidents, we may instead choose to rely on the reported mileage. However, out of the 9491 observations considered for this model 757 (8\%) have a missing response to the question about the mileage. Those observations could simply be discarded, yet CEGs allow for not only including the incomplete observations into the model but also to reason about the patterns of the missingness. For a more detailed discussion on the CEG models of missingness refer to \cite{barclay2014missingness}. 
 
-As previously, let $X_a$ describe the age, $X_s$ sex, and $Y$ the accident involvement during the first 6 months after passing the test. Let also $X_m$ describe the annualised mileage taking one of the three values coded as:  1 = above 12000, 2 = 4000 - 12000 miles, 3 = below 4000 miles. We further introduce a new variable $R_m$ indicating whether $X_m$ is missing or not. Fig~\ref{ceg:mis-miles} presents the most probable CEG on $\boldsymbol{X} = (X_a, X_s, R_m, X_m, Y)$ found by the AHC algorithm. The positions $w_{27}, w_{29}, w_{48}, w_{19}$ in the final layer of the CEG are ordered with respect to the predictive probability of accident involvement: 14.1\%, 8.6\%, 4.9\%, 2.7\%, respectively.
+As previously, let $X_a$ describe the age, $X_s$ sex, and $Y$ the accident involvement during the first 6 months after passing the test. Let also $X_m$ describe the annualised mileage taking one of the three values coded as:  1 = above 12000, 2 = 4000 - 12000 miles, 3 = below 4000 miles. We further introduce a new variable $R_m$ indicating whether $X_m$ is missing or not. Fig~\ref{ceg:mis-miles} presents the most probable CEG on $\boldsymbol{X} = (X_a, X_s, R_m, X_m, Y)$ found by the AHC algorithm. The positions $w_{27}, w_{47}, w_{48}, w_{19}$ in the final layer of the CEG are ordered with respect to the predictive probability of accident involvement: 14.1\%, 8.6\%, 4.9\%, 2.7\%, respectively.
 \begin{figure}
 \centering
 \input{figures/ceg-mis-miles}
 \caption{CEG on five variables $\boldsymbol{X} = (X_a, X_s, R_m, X_m, Y)$. Dashed edges highlighting the coincidence of missing response for men with the highest mileage.}
 \label{ceg:mis-miles}
 \end{figure}
-When considering the potential impact of the missing data on the final findings, it is important to consider the underlying reasons for why the data are missing. Missing data are typically grouped into three categories: missing completely at random (MCAR), missing at random (MAR) and missing not at random (MNAR); as proposed in \cite{rubin1989nonresponse}. 
+When considering the potential impact of the missing data on the final findings, it is important to consider the underlying reasons why the data are missing. Missing data are typically grouped into three categories: missing completely at random (MCAR), missing at random (MAR) and missing not at random (MNAR); as proposed in \cite{rubin1989nonresponse}. 
 
 If the probability of $X_m$ missing is the same for all age-sex groups, then the data could be hypothesised to be MCAR. This would require that $R_m$ is independent of $X_s$ and $X_a$ and we would expect all positions on the level of the $R_m$ variable to be in the same stage. 
 This is not the case as in the CEGs from Fig~\ref{ceg:mis-miles} we can distinguish 3 different 
 stages for $R_m$. These correspond to the following groups of respondents: 
-all men (blue stage), women aged 16-21 (yellow stage), and women above the age of 21 (grey stage).
+all men (blue stage), women aged 16-21 (yellow stage), and women above the age of 21 (white stage).
 Hence, the assumption that the data are MCAR is unlikely to hold. Among those three groups, it is the women aged 16-21 who are the most likely not to provide an estimate for the miles driven (11\%), followed by women above the age of 21 (9\%), while the non-response to the question on miles among men is estimated to be about the level of 3\%. However, the data can be missing at random only conditionally on certain values of another variable. 
 From the CEG in Fig~\ref{ceg:mis-miles} we can observe that all men end up in the same stage on the $R_m$ level (blue). We can therefore deduce that:
 \[R_m \ind X_a \ | \ X_s = M\]
@@ -303,7 +328,7 @@ This again is not the case. Interestingly, we observe that for all men, the miss
 On the example of male drivers aged 19-21, under the CEG model considered, the predictive probability of an accident is 14.1\%, 8.6\% and 4.9\% given high, average and low mileage respectively. Hence, if the data are MAR a young man aged 19-21 for whom the mileage is missing should have an accident probability of $14.1 \times \frac{93}{865} + 8.6 \times \frac{349}{865} + 4.9 \times \frac{423}{865} = 7.4\%$ where among men aged 19-21 93 reported high mileage, 349 reported average mileage and 423 reported low mileage. However, we see that the edge describing the missingness of the mileage for men aged 19-21 leads to the same position as the edge for high mileage with a noticeably higher predictive probability of (14.1\%). 
 
 \subsection{Modelling study drop-outs with CEGs}\label{subsec:dropouts}
-As was already noted in Section~\ref{sec:cohortii} one major obstacle to treat the `Cohort II' as a longitudinal study is the dropping response rate within subsequent waves of the Driving Experience Questionnaire.
+As was already noted in section~\ref{sec:cohortii} one major obstacle to treat the `Cohort II' as a longitudinal study is the dropping response rate within subsequent waves of the Driving Experience Questionnaire.
 In this section, we apply Chain Event Graphs to represent various hypotheses about the patterns of non-response to the subsequent waves of the survey. Hence we let $X_s$ be the variable describing the gender of a respondent and $X_1, X_2, X_3, X_4$ be four binary variables indicating the response to surveys DEQ1, DEQ2, DEQ3 and DEQ4 respectively. Here, the only natural ordering of the variables is: $\boldsymbol{X} = (X_s, X_1, X_2, X_3, X_4)$. The corresponding event tree is a binary tree with five levels.
 
 \subsubsection{Representing possible models of non-reponse with CEGs}\label{subsec:dropouts-hypothesis}
@@ -332,7 +357,7 @@ Another simple hypothesis might be to model the responses to the questionnaires 
 \begin{example}[Counting Responses]
 \label{exm:counting-responses}
 In this example we draw our attention to the number of currently missing responses to the survey. The hypothesis of this example is as follows: Given the wave of the survey, the response to the next questionnaire depends only on the number of already recorded responses. The missigness of responses is additionally independent of sex. 
-If we label the edges of the $\boldsymbol{X}$-compatible staged tree with 1 and 0 to indicate the presence of response in every survey, then the vertices of the staged tree are in the same stage, if and only if they are on the same level of the tree and the sum from the edges of their root-to-vertex paths is equal. Fig~\ref{ceg:counting-responses} represents the CEG for this hypothesis. For instance, in this scenario, responding to the first survey and not responding to the second - path \{1,0\} - leads to the same position $w_{2,1}$ as not responding to the first survey but responding to the second one - path \{0, 1\}. Similarly, all three paths \{1, 1, 0\}, \{1, 0, 1\} and \{0, 1, 1\} lead to the same position $w_{3,2}$ interpreted as: out of the first three surveys, response to exactly two was recorded.
+If we label the edges of the $\boldsymbol{X}$-compatible staged tree with 1 and 0 to indicate the presence of response in every survey, then the vertices of the staged tree are in the same stage, if and only if they are on the same level of the tree and the sum from the edges of their root-to-vertex paths is equal. Fig~\ref{ceg:counting-responses} represents the CEG for this hypothesis. For instance, in this scenario, responding to the first survey and not responding to the second - path \{1,0\} - leads to the same position $w_{2,1}$ as not responding to the first survey, but responding to the second one - path \{0, 1\}. Similarly, all three paths \{1, 1, 0\}, \{1, 0, 1\} and \{0, 1, 1\} lead to the same position $w_{3,2}$ interpreted as: out of the first three surveys, response to exactly two was recorded.
 \end{example}
 \begin{figure}
 \centering
@@ -348,7 +373,7 @@ In the previous subsection, we presented several examples of how a modeller migh
 \begin{enumerate}[topsep=0pt]
     \item The probability of response to the first survey is dependent on sex. The probability of response to the second survey is dependent on both the sex and the response to the previous survey.
     \item Given that the pattern of responses to the first and second survey is $\{0, 1\}$, i.e. $X_1 = 0$ and $X_2 = 1$, the probability of responding to DEQ3 and DEQ4 is independent of sex. (The paths following edges $\{F, 0, 1\}$, $\{M, 0, 1\}$ are incident on position $w_{12}$).
-    \item Given that the pattern of responses to the first and second survey is $\{1, 0\}$, i.e. $X_1 = 1$ and $X_2 = 0$, the probability of responding to DEQ3 is the same for men and women (positions $w_{13}$ and $w_{9}$ are in the same stage), but the probability of responding to DEQ4 differs for men and women ($w_{13}$ and $w_{9}$ are in the same stage, but not merged into one node).
+    \item Given that the pattern of responses to the first and second survey is $\{1, 0\}$, i.e. $X_1 = 1$ and $X_2 = 0$, the probability of responding to DEQ3 is the same for men and women (positions $w_{13}$ and $w_{9}$ are in the same stage), but the probability of responding to DEQ4 differs for men and women ($w_{13}$ and $w_{9}$ are in the same stage, but are not merged into one node).
 \end{enumerate}
 \begin{figure}
 \centering
@@ -357,7 +382,7 @@ In the previous subsection, we presented several examples of how a modeller migh
 \caption{The highest scoring CEG found by the AHC algorithm together with the transition probabilities.}
 \label{ceg:ahc-responses}
 \end{figure}
-By following the root to sink paths we can observe how the probability of responding to the next survey increases when the response to the previous survey was also recorded. However, due to the complexity of this graph, it is not as easy to examine, when presented in its full form. We, therefore, suggest a more compact representation by introducing a new variable $X_{1,2}$. taking values $\{00, 01, 10, 11\}$ which represents the responses to the first two waves of the survey. The new CEG on $\boldsymbol{X} = (X_s, X_{1,2}, X_3, X_4)$ is presented on Fig~\ref{ceg:compact-responses}. With this graph, observations 2. and 3. are easier to spot. Blue and orange stages represent the event of answering one survey out of the first two. Given that this event has occurred, the response to the third survey is independent of sex. Comparing the probabilities associated with blue and orange stages we can observe that it is the response to the second survey, rather than the first, which is associated with higher chances of responding to the third survey (31\% vs. 16-20\%). Positions $w_6$ and $w_{10}$ correspond to the event of answering both DEQ1 and DEQ2, yet the probability of this event happening is higher for female repondents than for male (33\% vs. 24\%). Given that response to the first two surveys was recorded, it is again the female respondents who are more likely to answer the third survey (60\% vs. 55\%). Paths \{$F$, 11, 1\} and \{$M$, 11, 1\} lead to position $w_{18}$ which has the highest estimated probability of answering the final survey DEQ4 out of all positions in the final layer of the graph. This is perhaps not very much surprising. An analogous observation can be made for the paths \{$F$, 00, 0\} and \{$M$, 00, 0\} which lead to position $w_{19}$ having the lowest probability of answering to DEQ4.
+By following the root to sink paths we can observe how the probability of responding to the next survey increases when the response to the previous survey was also recorded. However, due to the complexity of this graph, it is not as easy to examine, when presented in its full form. We, therefore, suggest a more compact representation by introducing a new variable $X_{1,2}$. taking values $\{00, 01, 10, 11\}$ which represents the responses to the first two waves of the survey. The new CEG on $\boldsymbol{X} = (X_s, X_{1,2}, X_3, X_4)$ is presented on Fig~\ref{ceg:compact-responses}. With this graph, observations 2. and 3. are easier to spot. The union of blue and orange stages represents the event of answering one survey out of the first two. Given that this event has occurred, the response to the third survey is independent of sex. Comparing the probabilities associated with blue and orange stages we can observe that it is the response to the second survey, rather than the first, which is associated with higher chances of responding to the third survey (31\% vs. 16-20\%). Positions $w_6$ and $w_{10}$ correspond to the event of answering both DEQ1 and DEQ2, yet the probability of this event happening is higher for female than for male respondents (33\% vs. 24\%). Given that response to the first two surveys was recorded, it is again the female respondents who are more likely to answer the third survey (60\% vs. 55\%). Paths \{$F$, 11, 1\} and \{$M$, 11, 1\} lead to position $w_{18}$ which has the highest estimated probability of answering the final survey DEQ4 out of all positions in the final layer of the graph. This is perhaps not very surprising. An analogous observation can be made for the paths \{$F$, 00, 0\} and \{$M$, 00, 0\} which lead to position $w_{19}$ having the lowest probability of answering to DEQ4.
 \begin{figure}
 \centering
 \input{figures/ceg-compact-responses}
@@ -376,9 +401,9 @@ By following the root to sink paths we can observe how the probability of respon
 
 \subsection{Introduction to the problem}
 
-Chain Event Graphs are a class of graphical models suited for modelling discrete events. Hence, in all of the previous models, variables such as age or mileage - originally taking values on the continuous scale - had to be discretised into a fixed number of intervals. A natural question may arise about the optimality of this process. Whenever continuous data are discretised, there is always some amount of discretisation error associated with a certain loss of information. Typically data are discretised into partitions of $K$ equal lengths/width (equal intervals) or $K\%$ of the total data (equal frequencies). All previous models adopted the latter approach of equal frequencies. In this section we discuss whether we can improve on our models by defining different discretisation rules, what is the most optimal number of the discrete outcomes, what thresholds between the intervals on the continuous scale should be chosen, and what exactly is considered under the term \emph{optimal}.
+Chain Event Graphs are a class of graphical models suited for modelling discrete events. Hence, in all of the previous models, variables such as age or mileage - originally taking values on the continuous scale - had to be discretised into a fixed number of intervals. A natural question may arise about the optimality of this process. Whenever continuous data are discretised, there is always some amount of discretisation error associated with a certain loss of information. Typically data are discretised into partitions of $K$ equal lengths/width (equal intervals) or $K\%$ of the total data (equal frequencies). All previous models adopted the latter approach of equal frequencies. In this section we discuss whether we can improve on our models by defining different discretisation rules, what is the optimal number of the discrete outcomes, what thresholds between the intervals on the continuous scale should be chosen, and what exactly is considered under the term \emph{optimal}.
 
-The equal-width and equal-frequencies approaches fall into the category of \emph{unsupervised} discretisation methods, which are based on the intrinsic data distribution of an individual variable. As an alternative, we may consider \emph{supervised} methods - an informative way of discretisation that takes into account the state of the target variable to inform and optimise the discretisation of each individual explanatory variable. There is a large number of supervised discretisation algorithms available, including the Fayyad \& Irani's MDL method \cite{fayyad1993discretization}, CAIM algorithm \cite{kurgan2004caim}, and many others that are based on entropy minimisation. A drawback of supervised discretisation algorithms is that the thresholds they produce are often physically meaningless. In addition, supervised algorithms may produce potentially spurious discretisation thresholds that are fit to noise in the data rather than thresholds that increase the predictive power of a model. 
+The equal-width and equal-frequencies approaches fall into the category of \emph{unsupervised} discretisation methods, which are based on the intrinsic data distribution of an individual variable. As an alternative, we may consider \emph{supervised} methods - an informative way of discretisation that takes into account the state of the target variable to inform and optimise the discretisation of each individual explanatory variable. There is a large number of supervised discretisation algorithms available, including the Fayyad \& Irani's MDL method \cite{fayyad1993discretization}, CAIM algorithm \cite{kurgan2004caim}, and many others that are based on entropy minimisation. A drawback of supervised discretisation algorithms is that the thresholds they produce are often physically meaningless. In addition, supervised algorithms may produce potentially spurious discretisation thresholds that fit to noise in the data rather than thresholds that increase the predictive power of a model. 
 
 In the context of the `Cohort II' study, we want to discretise the two explanatory variables: age and mileage, with accident involvement being our target variable. Initial experiments in discretising these features involved metrics that are used in decision tree learning: Gini impurity and Information gain. Binning the variables according to these metrics often led to an increase in the final score of the CEG models; yet as already alluded, they provided thresholds that would not be considered as meaningful for a real-world application. An age threshold of 18.441 in determining the accident risk category is not necessarily the most sensible or practical.
 
@@ -431,13 +456,13 @@ $\boldsymbol{X}_3$ & $(16,  33)$          & 1.07s   & $(16,  28)$         & 1.62
 \caption{Partitions of age into stages and their computational times using the greedy and full-search methods. Numbers from the partition vectors correspond to the lower bound of each age group; e.g. partition vector $(16, 18, 19, 33)$ generates 4 age groups: 16-17, 18, 19-32, 33+.} 
 \label{tab:part-and-time}
 \end{table}
-The full-search method was implemented with the intention to compare it with the performance of the greedy algorithm. With BIC as the model selection criterion, stages with small number of observations are typically selected first for merging by the greedy rule. Hence, it was expected that greedy algorithm will lead to sub-optimal partitions. Yet, as can be observed from Table~\ref{tab:part-and-time} and which was also confirmed with a series of test with different subsets of the data, partitions found by the greedy search are identical or almost identical as those found with the full-search method. In case of a discrepancy in the solutions found by the greedy and the full-search algorithms, the difference in the model selections scores between the two  was negligible.
-Let us also observe the implications of including more variables in $\boldsymbol{X}$ preceding $X_a$ - the age. More variables appearing before $X_a$ in the event tree lead to partitions with smaller final number of bins $K$. This is an expected consequence of the following:
+The full-search method was implemented with the intention to compare it with the performance of the greedy algorithm. With BIC as the model selection criterion, stages with small number of observations are typically selected first for merging by the greedy rule. Hence, it was expected that greedy algorithm will lead to sub-optimal partitions. Yet, as can be observed from Table~\ref{tab:part-and-time} and what was also confirmed with a series of test with different subsets of the data, partitions found by the greedy search are identical or almost identical as those found with the full-search method. In case of a discrepancy in the solutions found by the greedy and the full-search algorithms, the difference in the model selections scores between the two  was negligible.
+Let us also observe the implications of including more variables in $\boldsymbol{X}$ preceding $X_a$ - the age. More variables appearing before $X_a$ in the event tree lead to partitions with smaller final number of bins $K_g$. This is an expected consequence of the following:
 \begin{enumerate}[topsep=0pt]
-    \item Preceding variables describe the data sufficiently-well; e.g. when the frequency of driving and the sex of a respondent is known, the probability of an accident across different age groups does not vary as much as it does when only the sex of a respondent is known. 
-    \item Deeper trees result in smaller sample sizes in the nodes considered for merging. Hence, less evidence for the need of more stages.    
+    \item Preceding variables describe the data sufficiently-well; e.g.: when the frequency of driving and the sex of a respondent is known, the probability of an accident across different age groups does not vary as much as it does when only the sex of a respondent is known. 
+    \item Deeper trees result in smaller sample sizes in the nodes considered for merging. Hence, there is less evidence for the need of more stages.    
 \end{enumerate}
-Having derived the optimised partitions for age, we can now construct CEG models for each of $\tilde{\boldsymbol{X}_1}$, $\tilde{\boldsymbol{X}_2}$ and $\tilde{\boldsymbol{X}_3}$, replacing $X_a$ with its discretised form $\tilde{X_a}$, according to the best scoring partitions. To compare the efficacy of our proposed method we also construct competing CEGs with age split into groups of equal frequencies. Table \ref{tab:bic-aic-df} shows the comparison of the final BIC and AIC scores of the models and the number of their degrees of freedom. Models were fitted with the non-Bayesian AHC (a.k.a. backward hill-climbing) algorithm using the \texttt{stagedtrees} package \cite{stagedtrees}.
+Having derived the optimised partitions for age, we can construct CEG models for each of $\tilde{\boldsymbol{X}_1}$, $\tilde{\boldsymbol{X}_2}$ and $\tilde{\boldsymbol{X}_3}$, replacing $X_a$ with its discretised form $\tilde{X_a}$, according to the best scoring partitions. To compare the efficacy of our proposed method we also construct competing CEGs with age split into groups of equal frequencies. Table \ref{tab:bic-aic-df} shows the comparison of the final BIC and AIC scores of the models and the number of their degrees of freedom. Models were fitted with the backward hill-climbing algorithm using the \texttt{stagedtrees} package - an equivalent of the AHC method with BIC as the model selection score. \cite{stagedtrees}.
 \begin{table}
 \vspace{1ex}
 \centering
@@ -445,14 +470,14 @@ Having derived the optimised partitions for age, we can now construct CEG models
  & \multicolumn{3}{c|}{equal-frequencies} & \multicolumn{3}{c}{optimised partition} \\
  & BIC           & AIC           & df     & BIC            & AIC           & df      \\ \hline
  \hline
-$\tilde{\boldsymbol{X}_1}$ & 27320.61      & 27277.66      & 6      & 28183.34       & 28140.39      & 6       \\
+$\tilde{\boldsymbol{X}_1}$ & 28183.34      & 28140.39       & 6     & 27320.61      & 27277.66      & 6       \\
 $\tilde{\boldsymbol{X}_2}$ & 36806.24      & 36748.97      & 8      & 34633.25       & 34568.83      & 9       \\
 $\tilde{\boldsymbol{X}_3}$ & 48423.52      & 48351.94      & 10     & 42427.73       & 42356.14      & 10     
 \end{tabular}
 \caption{Comparison of CEG models with the age variable split into groups of equal frequency and groups according to the best scoring partition as in Table~\ref{tab:part-and-time}.}
 \label{tab:bic-aic-df}
 \end{table}
-CEG models fitted using the newly derived age groups score consistently better than their equal-frequency analogues, which proves the viability of our proposed approach. Figure~\ref{fig:compare-cegs} shows the most interesting case, namely the two CEGs on $\tilde{\boldsymbol{X}_2}= (X_s, \tilde{X_a}, Y)$; defining the thresholds between age groups according to the best scoring partition leads to one more stage on the level of accident involvement. 
+CEG models fitted using the newly derived age groups scored consistently better than their equal-frequency analogues, which proves the viability of our proposed approach. Figure~\ref{fig:compare-cegs} shows the most interesting case, namely the two CEGs on $\tilde{\boldsymbol{X}_2}= (X_s, \tilde{X_a}, Y)$; defining the thresholds between age groups according to the best scoring partition leads to one more stage on the level of accident involvement. 
 \begin{figure}
      \centering
      \begin{subfigure}[a]{0.7\textwidth}
@@ -472,17 +497,9 @@ CEG models fitted using the newly derived age groups score consistently better t
 \caption{Comparison of CEGs on $\boldsymbol{X}_2$ with different thresholds between the categories of age.}
 \label{fig:compare-cegs}
 \end{figure}
-By adjusting the thresholds of age for both sex and accident involvement, the CEG in Fig~\ref{fig:ceg-new-age} has better capabilities in capturing the differences in accident involvement between female and male drivers compared to the CEG in Fig~\ref{fig:ceg-ef-age}. In Fig~\ref{fig:ceg-ef-age} all 16- to 22-year-old female and all 18- to 80-year-old male respondents have a 6.4\% estimated probability of accident involvement. CEG from Fig~\ref{fig:ceg-new-age} shows a more refined categorisation: females aged 16-19 and males aged 19-33 having a 6.8\% probability of an accident, and females aged 19-33 and males aged 33-80 with a 4.2\% probability of an accident.
+By adjusting the thresholds of age for both sex and accident involvement, the CEG in Fig~\ref{fig:ceg-new-age} has better capabilities in capturing the differences in accident involvement between female and male drivers compared to the CEG in Fig~\ref{fig:ceg-ef-age}. In Fig~\ref{fig:ceg-ef-age} all 16- to 22-year-old female and all 18- to 80-year-old male respondents have a 6.4\% estimated probability of accident involvement. CEG from Fig~\ref{fig:ceg-new-age} shows a more refined categorisation: women aged 16-19 and men aged 19-33 having a 6.8\% probability of an accident, and women aged 19-33 and men aged 33-80 with a 4.2\% probability of an accident.
 
-While testing the proposed above methods, another interesting observation was made. If the greedy partitioning algorithm is run on $\boldsymbol{X}_1$ for the subsets of the data with female respondents and with male respondents separately, the best scoring partition for females is given by: 16-17, 18-32 and 33-80, and for males by: 16-17, 18, 19-80. Compare this to the best scoring partition found by the greedy algorithm with the full data: 16-17, 18, 19-32, 33-80, which is exactly the intersection of female and male partitions.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% Implementation
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Methodology and implementation}
-TBD
+While testing the proposed above methods, another interesting observation was made. If the greedy partitioning algorithm is run on $\boldsymbol{X}_1$ for the subsets of the data with female respondents and with male respondents separately, the best scoring partition for women is given by: 16-17, 18-32 and 33-80, and for men by: 16-17, 18, 19-80. Compare this to the best scoring partition found by the greedy algorithm with the full data: 16-17, 18, 19-32, 33-80 - exactly the intersection of female and male partitions.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -491,26 +508,33 @@ TBD
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion and further research}\label{sec:discussion}
-One of the aims of the `Cohort II' study was to investigate the impact of changes to the testing regime, specifically the introduction of the hazard perception test. For this specific purpose the framework of casual CEGs as discussed in \cite{smith2017cegs} might prove very useful. For instance, we may add to our model from section \ref{sec:cegs} an extra variable describing whether a respondent took the hazard perception test and measure its total effect of on accident involvement. However, before any casual inference can be done, first a reliable partition of nodes into stages should be elected, which is not always a straightforward task. All of the currently available algorithms for fitting staged event trees rely on greedy heuristics; after fitting staged trees with the hazard perception variable, the final CEG models led to ambiguous conclusions contradicting the findings from the `Cohort II' study. However, it was later discovered that these spurious observations were caused by the order in which certain stages were merged. Greedy heuristics led to merges between stages that resulted in biased conditional probability estimates of accident involvement. This observation brings us to conclusion that the greedy approaches should always be applied with caution, and that findings derived from CEG models fitted with greedy algorithms should additionally be supported with appropriate hypothesis testing or at least compared against the raw conditional probability tables before presenting back to a client. 
+One of the aims of the `Cohort II' study was to investigate the impact of changes to the testing regime, specifically the introduction of the hazard perception test. For this specific purpose, the framework of casual CEGs as discussed in \cite{smith2017cegs} might prove very useful. For instance, we may add to our model from section \ref{sec:cegs} an extra variable describing whether a respondent took the hazard perception test and measure its total effect on accident involvement. However, before any casual inference can be done, first a reliable partition of nodes into stages should be selected, which is not always a straightforward task. All of the currently available algorithms for fitting staged event trees rely on greedy heuristics; after fitting staged trees with the hazard perception variable, the final CEG models led to ambiguous conclusions contradicting the findings from the original report of `Cohort II' study. However, it was later discovered that these spurious observations were caused by the order in which certain stages were merged. Greedy heuristics led to merges between stages that resulted in biased conditional probability estimates of accident involvement. This observation brings us to the following conclusion - greedy approaches should always be applied with caution, and that findings derived from CEG models fitted with greedy algorithms should additionally be supported with appropriate hypothesis testing or at least compared against the raw conditional probability tables before presenting back to a client. 
 
-In regards to the methods from section~\ref{sec:discretise} we note that while the presented results may look promising, these should mainly be treated as a proof of concept and further work needs to be done to improve on robustness of these methods. In particular, with deeper trees it is not unusual that the final subtrees considered may contain many unobserved categories, for which special treatment is needed. A possibility might be to use a Bayesian approach and apply a prior distribution over the event tree before the partitioning algorithm is run. Applying a non-informative prior may additionally act as a smoothing parameter reducing the impact of noise in the data. Another aspect worth considering are the implications of including additional variables in the event tree that succeed the variable chosen for discretisation. Different partitions of the sample space for a variable situated in the middle of an event tree may influence the groupings of downstream nodes into stages and positions; hence, result in more complex or more simplified structures of the final CEGs. In this case the final CEG score cannot be maximised independently for each of the variables, leading to a much more complex problem that can quickly become intractable. 
-
-
-% Points to mention
-%  - Fallacy of using greedy (merging leads to biased conclusions, example hazard perception)
-%  - Not suitable for detecting subtle differences (differences in HP not detected, nodes merged together)
+In regards to the methods from section~\ref{sec:discretise}, we note that while the presented results may look promising, these should mainly be treated as a proof of concept and further work needs to be done to improve on the robustness of these methods. In particular, with deeper trees, it is not unusual that the final subtrees considered may contain many unobserved categories, for which special treatment is needed. A possibility might be to use a Bayesian approach and apply a prior distribution over the event tree before the partitioning algorithm is run. Applying a non-informative prior may additionally act as a smoothing parameter reducing the impact of noise in the data. Another aspect worth considering is the implications of including additional variables in the event tree that succeed the variable chosen for discretisation. Different partitions of the sample space for a variable situated in the middle of an event tree may influence the groupings of downstream nodes into stages and positions; hence, result in more complex or more simplified structures of the final CEGs. In this case, the final CEG score cannot be maximised independently for each of the variables, leading to a much more complex problem that can quickly become intractable. 
 
 
+\appendix
+\newpage
+\subsection*{Methods and implementation}
+In the initial stages of the project, trees were fitted with the \texttt{stagedtrees} R package \cite{stagedtrees}. The package implements a number of non-Bayesian greedy search algorithms, in particular backward hill-climbing method which is an analogue to the Bayesian AHC search. It also allows for applying Laplacian smoothing which gives equivalent results to introducing a non-informative prior distribution over the edges of the event trees. In more advanced stages of the project, I additionally relied on the Python code developed by A. Shenvi as presented in \cite{shenvi2020constructing}. It uses the Agglomerative hierarchical clustering (AHC) algorithm with a Bayes factor score for model selection. Partitions of the nodes into stages found by the AHC method coincided with those previously found with the \texttt{stagedtrees} package. Due to the specific requirements of my research, I extended both the R and Python implementations for fitting staged trees and CEGs with further functionalities. Contributions to the software include:
+\begin{itemize}[topsep=0pt]
+    \item Adding new methods to the \texttt{stagedtrees} R package for fitting staged trees with an ordinal variable as discussed in section \ref{sec:discretise}
+    \item Extending the Python code with additional parameters for plotting the event trees, staged trees and CEGs.
+    \item Implementing a pipeline for exporting the DOT graphs generated with \\ \texttt{PyDotPlus} Python package to documents typeset in \LaTeX and PGF/TikZ.
+\end{itemize}
+The code used throughout this project together with the documentation is publicly available on my \href{https://github.com/Kaasiak/chain-event-graphs}{GitHub}.
+
+\subsection*{Learning outcomes}
+This research project was an invaluable learning experience allowing me to gain a hands-on experience with statistical modelling and Bayesian inference. I began the project with no prior university-level education on Bayesian statistics or graphical models. The book on Chain Event Graphs by Prof. J.Q. Smith \cite{smith2017cegs} provided an excellent introduction to Bayesian networks and Bayesian inference on discrete statistical models, including the prior-to-posterior conjugate analyses and approaches to model selection. The project introduced me to a wide range of topics outside the scope of the standard degree; moreover, it inspired my choices for the future university modules. 
+\vspace{5ex}
+
+
+
+\subsection*{Acknowledgements}
+I would like to thank my supervisor, Prof. Jane Hutton, for her support throughout the project. Our meetings always resulted in stimulating discussions leaving me with new interesting ideas to think about and motivating me to continue the work. I would also like to thank Aditi Shenvi for sharing her work and experiences with Chain Event Graphs. 
 
 % TO DO:
-% - clear not grey
-% - rewrite the definition
-% - explain the colours once
-% - mcar and MAR in missing response descriptions
-% - more commentary on the counting response moedel
-% - explain the sex is added
-% - {1,0} {0,1} mistake
-% - add more discussion on the missing responses
+
 
 
 % ---- Bibliography ----
